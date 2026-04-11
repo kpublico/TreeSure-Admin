@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Tree Inventory Admin</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"]
+          },
+          colors: {
+            forest: {
+              50: "#f1f8ee",
+              100: "#ddeed7",
+              200: "#bddcaf",
+              300: "#98c982",
+              500: "#5aa04f",
+              600: "#4f9245",
+              700: "#467f3c",
+              800: "#3b6c33",
+              900: "#2f5528"
+            }
+          },
+          boxShadow: {
+            soft: "0 20px 50px -24px rgba(18, 63, 44, 0.25)",
+            card: "0 8px 24px -18px rgba(18, 63, 44, 0.35)"
+          }
+        }
+      }
+    };
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* Keep viewport stable while dynamic chart/map content renders. */
+    html,
+    body {
+      overflow-anchor: none;
+    }
+
+    /* Keep map and its controls below sticky header while scrolling. */
+    #treeMap,
+    #treeMap .leaflet-pane,
+    #treeMap .leaflet-control,
+    #treeMap .leaflet-top,
+    #treeMap .leaflet-bottom {
+      z-index: 10 !important;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen overflow-x-hidden bg-slate-50 font-sans text-slate-900 antialiased">
+  <div class="flex min-h-screen w-full">
+    <aside id="sidebar-container" class="hidden lg:block lg:w-[230px]"></aside>
+
+    <div class="flex min-w-0 flex-1 flex-col">
+      <div class="sticky top-0 z-30 border-b border-emerald-100 bg-white/90 shadow-sm backdrop-blur">
+        <div class="flex w-full items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+          <div class="flex items-center gap-4">
+            <button id="mobileSidebarToggle" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-100 bg-emerald-50 text-emerald-700 shadow-sm lg:hidden" aria-label="Open sidebar">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            <div>
+              <p class="text-sm font-semibold text-forest-700">Welcome back, Admin!</p>
+              <h1 class="text-2xl font-extrabold tracking-tight text-emerald-950 sm:text-3xl">TreeSure Dashboard</h1>
+            </div>
+          </div>
+          <button id="refreshDashboard" class="inline-flex items-center gap-2 rounded-full bg-forest-700 px-4 py-2.5 text-sm font-semibold text-white shadow-card transition hover:bg-forest-600">
+            <i class="fa-solid fa-rotate-right"></i>
+            Refresh Data
+          </button>
+        </div>
+      </div>
+
+      <main class="w-full flex-1 space-y-8 px-4 py-6 sm:px-6 lg:px-8">
+        <section aria-labelledby="dashboardHeroTitle" class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+          <div class="rounded-[28px] bg-gradient-to-br from-forest-800 to-forest-700 p-6 text-white shadow-soft ring-1 ring-emerald-900/10 sm:p-8">
+            <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+              <div class="max-w-2xl space-y-4">
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-100">Admin Overview</p>
+                <h2 id="dashboardHeroTitle" class="text-3xl font-black leading-tight sm:text-4xl">Welcome, <span id="adminName" class="text-white"></span></h2>
+                <p class="max-w-xl text-sm leading-6 text-emerald-50/90">Manage tagged trees, applications, appointments, reports, and field activity from one central command center.</p>
+                <div class="flex flex-wrap gap-2">
+                  <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-emerald-50 ring-1 ring-white/15"><i class="fa-solid fa-tree mr-2"></i>Available to all users</span>
+                  <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-emerald-50 ring-1 ring-white/15"><i class="fa-solid fa-shield-halved mr-2"></i>Live monitoring</span>
+                  <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-emerald-50 ring-1 ring-white/15"><i class="fa-solid fa-map-location-dot mr-2"></i>Geographic insights</span>
+                </div>
+              </div>
+              <div class="rounded-2xl bg-white/10 px-4 py-3 text-sm font-semibold text-emerald-50 ring-1 ring-white/15">
+                <p class="text-xs uppercase tracking-[0.18em] text-emerald-100">Status</p>
+                <p class="mt-1">System active</p>
+              </div>
+            </div>
+          </div>
+
+          <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <article class="rounded-[24px] border border-emerald-100 bg-white p-5 shadow-card">
+              <p class="text-sm font-semibold text-slate-500">Total Tagged Trees</p>
+              <div id="totalTaggedTrees" class="mt-4 text-4xl font-black text-emerald-950">0</div>
+            </article>
+            <article class="rounded-[24px] border border-emerald-100 bg-white p-5 shadow-card">
+              <p class="text-sm font-semibold text-slate-500">Species Variety</p>
+              <div id="speciesCount" class="mt-4 text-4xl font-black text-emerald-950">0</div>
+            </article>
+            <article class="rounded-[24px] border border-emerald-100 bg-white p-5 shadow-card">
+              <p class="text-sm font-semibold text-slate-500">Average Trees / Forester</p>
+              <div id="avgTreesPerForester" class="mt-4 text-4xl font-black text-emerald-950">0</div>
+            </article>
+          </section>
+        </section>
+
+        <section aria-labelledby="mainNavTitle" class="space-y-4">
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <p class="text-sm font-semibold text-forest-700">Main Sections</p>
+              <h3 id="mainNavTitle" class="text-xl font-extrabold text-emerald-950">Access key dashboard features</h3>
+            </div>
+          </div>
+          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <!-- Trees Management -->
+            <article data-target="trees.html" role="link" tabindex="0" class="dashboard-nav-card group cursor-pointer rounded-[24px] border border-emerald-100 bg-white p-6 shadow-card transition hover:shadow-soft">
+              <div class="border-t-4 border-emerald-500 pb-4"></div>
+              <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50">
+                <i class="fa-solid fa-tree text-2xl text-emerald-600"></i>
+              </div>
+              <h4 class="mb-2 text-lg font-bold text-emerald-950">Trees Management</h4>
+              <p class="mb-4 text-sm leading-6 text-slate-600">View and manage all tagged trees in the forest inventory system</p>
+              <a href="trees.html" class="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 transition hover:text-emerald-700">
+                Open section <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </article>
+
+            <!-- Applications -->
+            <article data-target="applications.html" role="link" tabindex="0" class="dashboard-nav-card group cursor-pointer rounded-[24px] border border-emerald-100 bg-white p-6 shadow-card transition hover:shadow-soft">
+              <div class="border-t-4 border-blue-500 pb-4"></div>
+              <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50">
+                <i class="fa-solid fa-file-lines text-2xl text-blue-600"></i>
+              </div>
+              <h4 class="mb-2 text-lg font-bold text-emerald-950">Applications</h4>
+              <p class="mb-4 text-sm leading-6 text-slate-600">Review and process all application types including permits and licenses</p>
+              <a href="applications.html" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 transition hover:text-blue-700">
+                Open section <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </article>
+
+            <!-- Users & Foresters -->
+            <article data-target="users.html" role="link" tabindex="0" class="dashboard-nav-card group cursor-pointer rounded-[24px] border border-emerald-100 bg-white p-6 shadow-card transition hover:shadow-soft">
+              <div class="border-t-4 border-purple-500 pb-4"></div>
+              <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-50">
+                <i class="fa-solid fa-users text-2xl text-purple-600"></i>
+              </div>
+              <h4 class="mb-2 text-lg font-bold text-emerald-950">Users & Foresters</h4>
+              <p class="mb-4 text-sm leading-6 text-slate-600">Manage user accounts, foresters, and applicant profiles</p>
+              <a href="users.html" class="inline-flex items-center gap-2 text-sm font-semibold text-purple-600 transition hover:text-purple-700">
+                Open section <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </article>
+
+            <!-- Reports -->
+            <article data-target="reports.html" role="link" tabindex="0" class="dashboard-nav-card group cursor-pointer rounded-[24px] border border-emerald-100 bg-white p-6 shadow-card transition hover:shadow-soft">
+              <div class="border-t-4 border-orange-500 pb-4"></div>
+              <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-50">
+                <i class="fa-solid fa-chart-bar text-2xl text-orange-600"></i>
+              </div>
+              <h4 class="mb-2 text-lg font-bold text-emerald-950">Reports</h4>
+              <p class="mb-4 text-sm leading-6 text-slate-600">Access detailed analytics and export forest management reports</p>
+              <a href="reports.html" class="inline-flex items-center gap-2 text-sm font-semibold text-orange-600 transition hover:text-orange-700">
+                Open section <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </article>
+
+            <!-- Settings -->
+            <article data-target="settings.html" role="link" tabindex="0" class="dashboard-nav-card group cursor-pointer rounded-[24px] border border-emerald-100 bg-white p-6 shadow-card transition hover:shadow-soft">
+              <div class="border-t-4 border-cyan-500 pb-4"></div>
+              <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50">
+                <i class="fa-solid fa-gear text-2xl text-cyan-600"></i>
+              </div>
+              <h4 class="mb-2 text-lg font-bold text-emerald-950">Settings</h4>
+              <p class="mb-4 text-sm leading-6 text-slate-600">Configure system preferences and other admin settings</p>
+              <a href="settings.html" class="inline-flex items-center gap-2 text-sm font-semibold text-cyan-600 transition hover:text-cyan-700">
+                Open section <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </article>
+
+            <!-- Map View -->
+            <article data-target="#mapTitle" role="link" tabindex="0" class="dashboard-nav-card group cursor-pointer rounded-[24px] border border-emerald-100 bg-white p-6 shadow-card transition hover:shadow-soft">
+              <div class="border-t-4 border-red-500 pb-4"></div>
+              <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50">
+                <i class="fa-solid fa-map text-2xl text-red-600"></i>
+              </div>
+              <h4 class="mb-2 text-lg font-bold text-emerald-950">Map View</h4>
+              <p class="mb-4 text-sm leading-6 text-slate-600">Visualize forest geographic distribution and tree locations</p>
+              <a href="#" id="mapViewJump" class="inline-flex items-center gap-2 text-sm font-semibold text-red-600 transition hover:text-red-700">
+                Open section <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </article>
+          </div>
+        </section>
+
+        <section aria-labelledby="quickOverviewTitle" class="space-y-4">
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <p class="text-sm font-semibold text-forest-700">Quick Overview</p>
+              <h3 id="quickOverviewTitle" class="text-xl font-extrabold text-emerald-950">Core operational totals</h3>
+            </div>
+          </div>
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <article class="rounded-[24px] border border-emerald-100 bg-white p-5 shadow-card">
+              <p class="text-sm font-semibold text-slate-500">Total Foresters</p><div id="totalForester" class="mt-3 text-3xl font-black text-emerald-950">0</div>
+            </article>
+            <article class="rounded-[24px] border border-emerald-100 bg-white p-5 shadow-card">
+              <p class="text-sm font-semibold text-slate-500">Total Applicants</p><div id="totalApplicants" class="mt-3 text-3xl font-black text-emerald-950">0</div>
+            </article>
+            <article class="rounded-[24px] border border-emerald-100 bg-white p-5 shadow-card">
+              <p class="text-sm font-semibold text-slate-500">Total Applications</p><div id="totalApplications" class="mt-3 text-3xl font-black text-emerald-950">0</div>
+            </article>
+            <article class="rounded-[24px] border border-emerald-100 bg-white p-5 shadow-card">
+              <p class="text-sm font-semibold text-slate-500">Pending Applications</p><div id="pendingApplications" class="mt-3 text-3xl font-black text-emerald-950">0</div>
+            </article>
+            <article class="rounded-[24px] border border-emerald-100 bg-white p-5 shadow-card">
+              <p class="text-sm font-semibold text-slate-500">Approved Applications</p><div id="approvedApplications" class="mt-3 text-3xl font-black text-emerald-950">0</div>
+            </article>
+            <article class="rounded-[24px] border border-emerald-100 bg-white p-5 shadow-card">
+              <p class="text-sm font-semibold text-slate-500">Applications This Month</p><div id="applicationsThisMonth" class="mt-3 text-3xl font-black text-emerald-950">0</div>
+            </article>
+            <article class="rounded-[24px] border border-emerald-100 bg-white p-5 shadow-card">
+              <p class="text-sm font-semibold text-slate-500">Trees Tagged This Month</p><div id="treesTaggedThisMonth" class="mt-3 text-3xl font-black text-emerald-950">0</div>
+            </article>
+            <article class="rounded-[24px] border border-emerald-100 bg-white p-5 shadow-card">
+              <p class="text-sm font-semibold text-slate-500">Active Appointments</p><div id="activeAppointments" class="mt-3 text-3xl font-black text-emerald-950">0</div>
+            </article>
+            <article class="rounded-[24px] border border-emerald-100 bg-white p-5 shadow-card">
+              <p class="text-sm font-semibold text-slate-500">Completed Appointments</p><div id="completedAppointments" class="mt-3 text-3xl font-black text-emerald-950">0</div>
+            </article>
+          </div>
+        </section>
+
+        <section aria-labelledby="pipelineTitle" class="rounded-[28px] border border-emerald-100 bg-white p-6 shadow-card">
+          <div class="mb-5 flex items-center justify-between">
+            <div>
+              <p class="text-sm font-semibold text-forest-700">Application Pipeline</p>
+              <h3 id="pipelineTitle" class="text-xl font-extrabold text-emerald-950">Application statistics by type</h3>
+            </div>
+          </div>
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5" id="dashboard-cards">
+            <article class="rounded-[22px] border border-emerald-100 bg-emerald-50 p-4 shadow-sm">
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">CTPO</p><div class="mt-5 text-3xl font-black text-emerald-950" id="ctpoCount">0</div>
+            </article>
+            <article class="rounded-[22px] border border-emerald-100 bg-emerald-50 p-4 shadow-sm">
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">PLTP</p><div class="mt-5 text-3xl font-black text-emerald-950" id="pltpCount">0</div>
+            </article>
+            <article class="rounded-[22px] border border-emerald-100 bg-emerald-50 p-4 shadow-sm">
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">SPLT</p><div class="mt-5 text-3xl font-black text-emerald-950" id="spltCount">0</div>
+            </article>
+            <article class="rounded-[22px] border border-emerald-100 bg-emerald-50 p-4 shadow-sm">
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Permit to Cut</p><div class="mt-5 text-3xl font-black text-emerald-950" id="ptcCount">0</div>
+            </article>
+            <article class="rounded-[22px] border border-emerald-100 bg-emerald-50 p-4 shadow-sm">
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Chainsaw</p><div class="mt-5 text-3xl font-black text-emerald-950" id="chainsawCount">0</div>
+            </article>
+          </div>
+        </section>
+
+        <div class="space-y-8">
+            <section aria-labelledby="analyticsTitle" class="space-y-4">
+              <div class="flex items-center gap-3">
+                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                  <i class="fa-solid fa-chart-line"></i>
+                </span>
+                <div>
+                  <p class="text-sm font-semibold text-forest-700">Analytics &amp; Insights</p>
+                  <h3 id="analyticsTitle" class="text-2xl font-extrabold text-emerald-950">Tree and application metrics</h3>
+                </div>
+              </div>
+
+              <div class="grid gap-5 md:grid-cols-2">
+                <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <h5 class="mb-3 text-2xl font-semibold text-slate-800">Trees by Species</h5>
+                  <div class="rounded-xl border border-slate-100 bg-slate-50 p-3">
+                    <canvas id="speciesChart" height="210"></canvas>
+                  </div>
+                </article>
+
+                <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <h5 class="mb-3 text-2xl font-semibold text-slate-800">Trees per Forester</h5>
+                  <div class="rounded-xl border border-slate-100 bg-slate-50 p-3">
+                    <canvas id="applicantChart" height="210"></canvas>
+                  </div>
+                </article>
+
+                <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <h5 class="mb-3 text-2xl font-semibold text-slate-800">Application Status</h5>
+                  <div class="rounded-xl border border-slate-100 bg-slate-50 p-3">
+                    <canvas id="statusChart" height="210"></canvas>
+                  </div>
+                </article>
+
+                <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <h5 class="mb-3 text-2xl font-semibold text-slate-800">Type Distribution</h5>
+                  <div class="rounded-xl border border-slate-100 bg-slate-50 p-3">
+                    <canvas id="appointmentTypeChart" height="210"></canvas>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section aria-labelledby="topPerformersTitle" class="rounded-[28px] border border-emerald-100 bg-white p-6 shadow-card">
+              <div class="mb-6 flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-semibold text-forest-700">Top Performers</p>
+                  <h3 id="topPerformersTitle" class="text-xl font-extrabold text-emerald-950">Most active records</h3>
+                </div>
+              </div>
+              <div class="grid gap-4 md:grid-cols-3">
+                <article class="rounded-[22px] border-l-4 border-forest-600 bg-emerald-50 p-4">
+                  <p class="text-sm font-bold text-emerald-900">Most Active Forester</p>
+                  <div id="topForester" class="mt-2 text-2xl font-black text-emerald-950">Loading...</div>
+                  <div id="topForesterCount" class="text-sm text-slate-500">0 trees tagged</div>
+                </article>
+                <article class="rounded-[22px] border-l-4 border-forest-600 bg-emerald-50 p-4">
+                  <p class="text-sm font-bold text-emerald-900">Most Common Species</p>
+                  <div id="topSpecies" class="mt-2 text-2xl font-black text-emerald-950">Loading...</div>
+                  <div id="topSpeciesCount" class="text-sm text-slate-500">0 trees</div>
+                </article>
+                <article class="rounded-[22px] border-l-4 border-forest-600 bg-emerald-50 p-4">
+                  <p class="text-sm font-bold text-emerald-900">Most Active Location</p>
+                  <div id="topLocation" class="mt-2 text-2xl font-black text-emerald-950">Loading...</div>
+                  <div id="topLocationCount" class="text-sm text-slate-500">0 appointments</div>
+                </article>
+              </div>
+            </section>
+
+            <section aria-labelledby="mapTitle" class="rounded-[28px] border border-emerald-100 bg-white p-6 shadow-card">
+              <div class="mb-5 flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-semibold text-forest-700">Geographic Distribution</p>
+                  <h3 id="mapTitle" class="text-xl font-extrabold text-emerald-950">Tree Locations Map</h3>
+                </div>
+              </div>
+              <div class="grid gap-6 md:grid-cols-3">
+                <div>
+                  <label for="speciesFilter" class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">By Species</label>
+                  <select id="speciesFilter" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100">
+                    <option value="all" selected>All Species</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="foresterFilter" class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">By Forester</label>
+                  <select id="foresterFilter" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100">
+                    <option value="all" selected>All Foresters</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="applicantFilter" class="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">By Applicant</label>
+                  <select id="applicantFilter" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100">
+                    <option value="all" selected>All Applicants</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mt-6 overflow-hidden rounded-[24px] border border-slate-200 bg-slate-100">
+                <div id="treeMap" class="h-[420px] w-full"></div>
+              </div>
+            </section>
+
+            <section aria-labelledby="trendsTitle" class="rounded-[28px] border border-emerald-100 bg-white p-6 shadow-card">
+              <div class="mb-5 flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-semibold text-forest-700">Growth Trends</p>
+                  <h3 id="trendsTitle" class="text-xl font-extrabold text-emerald-950">Trees tagged over time</h3>
+                </div>
+              </div>
+              <div class="rounded-[22px] border border-slate-100 bg-slate-50 p-4">
+                <canvas id="trendsChart" height="240"></canvas>
+              </div>
+            </section>
+
+            <section aria-labelledby="monthlyTitle" class="rounded-[28px] border border-emerald-100 bg-white p-6 shadow-card">
+              <div class="mb-6 flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-semibold text-forest-700">Monthly Performance</p>
+                  <h3 id="monthlyTitle" class="text-xl font-extrabold text-emerald-950">Comparison summary</h3>
+                </div>
+              </div>
+              <div class="grid gap-4 md:grid-cols-3">
+                <article class="rounded-[22px] border border-emerald-100 bg-emerald-50 p-4">
+                  <p class="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">This Month</p>
+                  <div id="thisMonthTrees" class="mt-3 text-3xl font-black text-emerald-950">0</div>
+                  <p class="text-sm text-slate-500">Trees Tagged</p>
+                </article>
+                <article class="rounded-[22px] border border-emerald-100 bg-emerald-50 p-4">
+                  <p class="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">Last Month</p>
+                  <div id="lastMonthTrees" class="mt-3 text-3xl font-black text-emerald-950">0</div>
+                  <p class="text-sm text-slate-500">Trees Tagged</p>
+                </article>
+                <article class="rounded-[22px] border border-emerald-100 bg-emerald-50 p-4">
+                  <p class="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">Growth</p>
+                  <div id="growthPercentage" class="mt-3 text-3xl font-black text-emerald-950">0%</div>
+                  <p class="text-sm text-slate-500">vs Last Month</p>
+                </article>
+              </div>
+              <div class="mt-4 grid gap-4 md:grid-cols-2">
+                <article class="rounded-[22px] border border-slate-100 bg-slate-50 p-4">
+                  <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Applications Last Month</p>
+                  <div id="applicationsLastMonth" class="mt-3 text-3xl font-black text-emerald-950">0</div>
+                </article>
+                <article class="rounded-[22px] border border-slate-100 bg-slate-50 p-4">
+                  <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Application Growth</p>
+                  <div id="applicationGrowth" class="mt-3 text-3xl font-black text-emerald-950">0%</div>
+                </article>
+              </div>
+            </section>
+
+            <section aria-labelledby="activityTitle" class="rounded-[28px] border border-emerald-100 bg-white p-6 shadow-card">
+              <div class="mb-5 flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-semibold text-forest-700">Recent Activities</p>
+                  <h3 id="activityTitle" class="text-xl font-extrabold text-emerald-950">Latest updates</h3>
+                </div>
+              </div>
+              <ul id="recentActivities" class="space-y-3 text-sm text-slate-600">
+                <li class="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">Loading recent updates...</li>
+              </ul>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="mobileSidebarBackdrop" class="fixed inset-0 z-40 hidden bg-slate-950/50 lg:hidden"></div>
+  <aside id="mobileSidebarPanel" class="fixed inset-y-0 left-0 z-50 hidden w-72 overflow-y-auto bg-white shadow-2xl lg:hidden"></aside>
+
+  <script>
+    // Prevent browser from restoring old scroll position after refresh/navigation.
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
+
+    // If URL contains a hash from previous navigation, clear it to avoid auto-jump.
+    if (window.location.hash) {
+      window.history.replaceState({}, "", window.location.pathname);
+      window.scrollTo(0, 0);
+    }
+
+    fetch("sidebar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar-container").innerHTML = html;
+        document.getElementById("mobileSidebarPanel").innerHTML = html;
+
+        // Highlight the active page
+        const current = window.location.pathname.split("/").pop();
+        document.querySelectorAll(".sidebar a").forEach(link => {
+          if (link.getAttribute("href") === current) link.classList.add("active");
+        });
+
+        document.querySelectorAll("#mobileSidebarPanel .sidebar a").forEach(link => {
+          if (link.getAttribute("href") === current) link.classList.add("active");
+        });
+
+        // Logout button
+        document.querySelectorAll("#sidebar-container #logoutBtn, #mobileSidebarPanel #logoutBtn").forEach(logoutBtn => {
+          logoutBtn.addEventListener("click", e => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = "login.html";
+          });
+        });
+
+        // Dropdown toggle
+        document.querySelectorAll("#sidebar-container .dropdown-toggle, #mobileSidebarPanel .dropdown-toggle").forEach(drop => {
+          drop.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation(); // prevent event bubbling
+            
+            // Close other dropdowns first
+            document.querySelectorAll(".dropdown.open").forEach(openDropdown => {
+              if (openDropdown !== drop.parentElement) {
+                openDropdown.classList.remove("open");
+              }
+            });
+            
+            drop.parentElement.classList.toggle("open");
+          });
+        });
+        document.querySelectorAll("#sidebar-container .sub-toggle, #mobileSidebarPanel .sub-toggle").forEach(sub => {
+          sub.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation(); // prevent event bubbling
+            sub.nextElementSibling.classList.toggle("open");
+          });
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener("click", e => {
+          if (!e.target.closest(".dropdown")) {
+            document.querySelectorAll(".dropdown.open").forEach(dropdown => {
+              dropdown.classList.remove("open");
+            });
+          }
+        });
+
+        // ---------- APPLICATION TYPE BUTTONS ----------
+        // When clicking application type buttons on dashboard, navigate to applications.html
+        // and store the selected type so applications.html can load it
+        const appButtons = [
+          { id: "ctpoBtn", type: "ctpo", title: "CTPO Applications" },
+          { id: "pltpBtn", type: "pltp", title: "PLTP Applications" },
+          { id: "spltpBtn", type: "spltp", title: "SPLTP Applications" },
+          { id: "permitCutBtn", type: "ptc", title: "Permit to Cut Applications" },
+          { id: "cttBtn", type: "ctt", title: "Transport Permit (CTT)" },
+          { id: "chainsawBtn", type: "chainsaw", title: "Chainsaw Registration" },
+        ];
+
+        appButtons.forEach(btn => {
+          const element = document.getElementById(btn.id);
+          if (element) {
+            element.addEventListener("click", () => {
+              // Store the selected application type
+              localStorage.setItem("selectedApplicationType", btn.type);
+              localStorage.setItem("selectedApplicationTitle", btn.title);
+              // Navigate to applications page
+              window.location.href = "applications.html";
+            });
+          }
+        });
+
+        const navigateFromCard = target => {
+          if (!target) return;
+          if (target.startsWith("#")) {
+            const id = target.slice(1);
+            document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+            window.history.replaceState({}, "", window.location.pathname);
+            return;
+          }
+          window.location.href = target;
+        };
+
+        document.querySelectorAll(".dashboard-nav-card").forEach(card => {
+          card.addEventListener("click", e => {
+            if (e.target.closest("a")) return;
+            navigateFromCard(card.dataset.target);
+          });
+
+          card.addEventListener("keydown", e => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              navigateFromCard(card.dataset.target);
+            }
+          });
+        });
+
+        const mapViewJump = document.getElementById("mapViewJump");
+        mapViewJump?.addEventListener("click", e => {
+          e.preventDefault();
+          document.getElementById("mapTitle")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          // Keep URL clean so reload does not auto-jump to a hash target.
+          window.history.replaceState({}, "", window.location.pathname);
+        });
+
+        const mobileToggle = document.getElementById("mobileSidebarToggle");
+        const mobilePanel = document.getElementById("mobileSidebarPanel");
+        const mobileBackdrop = document.getElementById("mobileSidebarBackdrop");
+
+        const closeMobileSidebar = () => {
+          mobilePanel.classList.add("hidden");
+          mobileBackdrop.classList.add("hidden");
+        };
+
+        mobileToggle?.addEventListener("click", () => {
+          mobilePanel.classList.remove("hidden");
+          mobileBackdrop.classList.remove("hidden");
+        });
+
+        mobileBackdrop?.addEventListener("click", closeMobileSidebar);
+
+        document.querySelectorAll("#mobileSidebarPanel a").forEach(link => {
+          link.addEventListener("click", closeMobileSidebar);
+        });
+      });
+  </script>
+  
+  <script type="module" src="js/application-temp-fix.js"></script>
+
+  <!-- Dashboard Logic -->
+  <script type="module" src="./js/dashboard.js"></script>
+</body>
+
+</html>

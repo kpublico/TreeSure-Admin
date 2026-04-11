@@ -1,0 +1,142 @@
+/* General layout */
+body.login-page {
+  font-family: "Poppins", sans-serif;
+  background: #a5d6a7; /* lighter green background */
+  background-size: cover;   /* <— makes it full-screen */
+  background-attachment: fixed; /* optional: keeps image fixed */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.login-box {
+  background: #fff;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+}
+/* Blur overlay */
+body.login-page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(9px);     /* <— THIS creates the blur */
+  background: rgba(0, 0, 0, 0.15); /* optional slight dark overlay */
+  z-index: -1;
+}
+.logo-container {
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+.logo-text {
+  margin-top: 10px;
+  font-size: 30px;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+/* Error Message Box */
+.error-box {
+  display: none;
+  background: #fdecea;          /* light red background */
+  border: 1px solid #f5c2c7;    /* soft red border */
+  color: #b71c1c;               /* dark red text */
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.error-box.show {
+  display: block;
+  opacity: 1;
+}
+
+/* Form styling */
+.form-group {
+  text-align: left;
+  margin-bottom: 18px;
+  position: relative;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+input:focus {
+  outline: none;
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
+}
+
+/* Toggle eye */
+.password-group {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 70%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 20px;
+  color: #333;
+}
+
+.toggle-password svg {
+  width: 20px;
+  height: 20px;
+  stroke: #333;
+}
+
+/* Button */
+button {
+  width: 100%;
+  padding: 12px;
+  background: #2e7d32;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #1b5e20;
+}

@@ -1,0 +1,27 @@
+/* Horizontal Top Bar (Fixed, Full Width) */
+.top-horizontal-bar {
+  width: 100%;
+  height: 40px; /* slightly thicker */
+  background-color:hsl(108, 34%, 45%); /* Dark green */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1100; /* above sidebar & main content */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* stronger, more professional shadow */
+}
+
+/* Push down main content and sidebar to avoid overlap */
+body {
+  padding-top: 32px; /* match top bar height */
+}
+
+/* Thick Horizontal Top Bar (Inside Main Content, Below Sidebar) */
+.main-top-bar {
+  width: calc(100% - 230px); /* full width minus sidebar width */
+  height: 60px; /* thicker bar */
+  background-color: #2e7d32; /* dark green */
+  border-radius: 12px; /* rounded corners */
+  margin-left: 230px; /* start after sidebar */
+  margin-bottom: 20px; /* space below the bar */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); /* deeper shadow for professional look */
+}

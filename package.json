@@ -1,0 +1,23 @@
+{
+  "name": "treesureadmin-main",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KrishaPublico/TreeSureAdmin.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KrishaPublico/TreeSureAdmin/issues"
+  },
+  "homepage": "https://github.com/KrishaPublico/TreeSureAdmin#readme",
+  "description": "",
+  "dependencies": {
+    "firebase": "^12.5.0"
+  }
+}

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trees - TreeSure Admin</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"]
+          },
+          colors: {
+            forest: {
+              50: "#f1f8ee",
+              100: "#ddeed7",
+              200: "#bddcaf",
+              300: "#98c982",
+              500: "#5aa04f",
+              600: "#4f9245",
+              700: "#467f3c",
+              800: "#3b6c33",
+              900: "#2f5528"
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    #treesTable tbody tr:hover {
+      background: #f8fafc;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen overflow-x-hidden bg-slate-50 font-sans text-slate-900 antialiased">
+  <div class="flex min-h-screen w-full">
+    <aside id="sidebar-container" class="hidden lg:block lg:w-[230px]"></aside>
+
+    <div class="flex min-w-0 flex-1 flex-col">
+      <header class="sticky top-0 z-30 border-b border-emerald-100 bg-forest-700 text-white shadow-sm">
+        <div class="flex w-full items-center justify-between gap-4 px-4 py-5 sm:px-6 lg:px-8">
+          <div class="flex items-center gap-4">
+            <button id="mobileSidebarToggle" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-100 bg-emerald-50 text-emerald-700 shadow-sm lg:hidden" aria-label="Open sidebar">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            <div>
+              <h1 class="flex items-center gap-2 text-4xl font-black tracking-tight"><i class="fa-solid fa-tree"></i> Trees Management</h1>
+              <p class="mt-1 text-sm text-emerald-100">Manage forest trees and inventory</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="w-full flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+        <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h3 class="mb-4 flex items-center gap-2 text-3xl font-black text-slate-800">🔍 Search Trees</h3>
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input id="treeSearchInput" type="text" placeholder="Search trees by ID, species, or location..." class="w-full rounded-xl border border-slate-300 bg-white py-3 pl-11 pr-4 text-sm outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100" />
+          </div>
+        </section>
+
+        <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h3 class="mb-4 flex items-center gap-2 text-3xl font-black text-slate-800">🌳 Trees Inventory</h3>
+
+          <div id="loadingMessage" class="mb-4 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            Loading tree inventory records...
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table id="treesTable" class="min-w-full bg-white text-sm">
+              <thead class="bg-emerald-100 text-left font-bold text-emerald-950">
+                <tr>
+                  <th class="px-4 py-3">Tree ID</th>
+                  <th class="px-4 py-3">Species</th>
+                  <th class="px-4 py-3">Location</th>
+                  <th class="px-4 py-3">Height (m)</th>
+                  <th class="px-4 py-3">DBH (cm)</th>
+                  <th class="px-4 py-3">Forester</th>
+                  <th class="px-4 py-3">Status</th>
+                </tr>
+              </thead>
+              <tbody id="treesTableBody" class="divide-y divide-slate-200">
+                <tr>
+                  <td colspan="7" class="px-4 py-8 text-center text-slate-500">No trees data available. Trees management system is loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="mobileSidebarBackdrop" class="fixed inset-0 z-40 hidden bg-slate-950/50 lg:hidden"></div>
+  <aside id="mobileSidebarPanel" class="fixed inset-y-0 left-0 z-50 hidden w-72 overflow-y-auto bg-white shadow-2xl lg:hidden"></aside>
+
+  <script>
+    fetch("sidebar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar-container").innerHTML = html;
+        document.getElementById("mobileSidebarPanel").innerHTML = html;
+
+        const current = window.location.pathname.split("/").pop();
+        document.querySelectorAll(".sidebar a").forEach(link => {
+          if (link.getAttribute("href") === current) link.classList.add("active");
+        });
+
+        document.querySelectorAll("#mobileSidebarPanel .sidebar a").forEach(link => {
+          if (link.getAttribute("href") === current) link.classList.add("active");
+        });
+
+        const logoutBtn = document.getElementById("logoutBtn");
+        logoutBtn?.addEventListener("click", e => {
+          e.preventDefault();
+          localStorage.clear();
+          window.location.href = "login.html";
+        });
+
+        document.querySelectorAll("#sidebar-container .dropdown-toggle, #mobileSidebarPanel .dropdown-toggle").forEach(drop => {
+          drop.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            document.querySelectorAll(".dropdown.open").forEach(openDropdown => {
+              if (openDropdown !== drop.parentElement) {
+                openDropdown.classList.remove("open");
+              }
+            });
+
+            drop.parentElement.classList.toggle("open");
+          });
+        });
+
+        document.querySelectorAll("#sidebar-container .sub-toggle, #mobileSidebarPanel .sub-toggle").forEach(sub => {
+          sub.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation();
+            sub.nextElementSibling.classList.toggle("open");
+          });
+        });
+
+        document.addEventListener("click", e => {
+          if (!e.target.closest(".dropdown")) {
+            document.querySelectorAll(".dropdown.open").forEach(dropdown => {
+              dropdown.classList.remove("open");
+            });
+          }
+        });
+
+        const appButtons = [
+          { id: "ctpoBtn", type: "ctpo", title: "CTPO Applications" },
+          { id: "pltpBtn", type: "pltp", title: "PLTP Applications" },
+          { id: "spltpBtn", type: "spltp", title: "SPLTP Applications" },
+          { id: "permitCutBtn", type: "ptc", title: "Permit to Cut Applications" },
+          { id: "cttBtn", type: "ctt", title: "Transport Permit (CTT)" },
+          { id: "chainsawBtn", type: "chainsaw", title: "Chainsaw Registration" }
+        ];
+
+        appButtons.forEach(btn => {
+          const element = document.getElementById(btn.id);
+          if (element) {
+            element.addEventListener("click", () => {
+              localStorage.setItem("selectedApplicationType", btn.type);
+              localStorage.setItem("selectedApplicationTitle", btn.title);
+              window.location.href = "applications.html";
+            });
+          }
+        });
+
+        const mobileToggle = document.getElementById("mobileSidebarToggle");
+        const mobilePanel = document.getElementById("mobileSidebarPanel");
+        const mobileBackdrop = document.getElementById("mobileSidebarBackdrop");
+
+        const closeMobileSidebar = () => {
+          mobilePanel.classList.add("hidden");
+          mobileBackdrop.classList.add("hidden");
+        };
+
+        mobileToggle?.addEventListener("click", () => {
+          mobilePanel.classList.remove("hidden");
+          mobileBackdrop.classList.remove("hidden");
+        });
+
+        mobileBackdrop?.addEventListener("click", closeMobileSidebar);
+        document.querySelectorAll("#mobileSidebarPanel a").forEach(link => {
+          link.addEventListener("click", closeMobileSidebar);
+        });
+      });
+
+  </script>
+
+  <script type="module" src="js/trees.js"></script>
+</body>
+
+</html>

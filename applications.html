@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Applications - TreeSure Admin</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"]
+          },
+          colors: {
+            forest: {
+              50: "#f1f8ee",
+              100: "#ddeed7",
+              200: "#bddcaf",
+              300: "#98c982",
+              500: "#5aa04f",
+              600: "#4f9245",
+              700: "#467f3c",
+              800: "#3b6c33",
+              900: "#2f5528"
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    .applicant-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .applicant-folder {
+      width: 190px;
+      min-height: 150px;
+      border-radius: 14px;
+      border: 1px solid #b8dfae;
+      background: linear-gradient(160deg, #f7fcf5, #e7f5e3);
+      box-shadow: 0 8px 18px -15px rgba(15, 23, 42, 0.7);
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .applicant-folder:hover {
+      transform: translateY(-3px);
+      border-color: #76b86b;
+      box-shadow: 0 16px 28px -22px rgba(46, 96, 37, 0.9);
+    }
+
+    .folder-icon {
+      font-size: 40px;
+    }
+
+    .applicant-name {
+      margin-top: 10px;
+      font-weight: 700;
+      color: #23471f;
+      word-break: break-word;
+      font-size: 14px;
+      line-height: 1.3;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      border: 3px solid #6aa75c;
+      border-top-color: transparent;
+      border-radius: 999px;
+      animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    #filesTable {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    #filesTable th,
+    #filesTable td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: middle;
+    }
+
+    #filesTable thead {
+      background: #edf7ea;
+      color: #1f3d1b;
+      font-weight: 800;
+    }
+
+    #filesTable tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .action-btn-main,
+    .action-btn-secondary {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .action-btn-main {
+      background: #467f3c;
+      color: #ffffff;
+    }
+
+    .action-btn-main:hover {
+      background: #3b6c33;
+    }
+
+    .action-btn-secondary {
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    .action-btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .view-submission-btn,
+    .view-btn {
+      border: 1px solid #467f3c;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #4f9245, #467f3c);
+      color: #ffffff;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 10px 20px -16px rgba(70, 127, 60, 0.85);
+    }
+
+    .view-submission-btn:hover,
+    .view-btn:hover {
+      background: linear-gradient(180deg, #467f3c, #3b6c33);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 24px -16px rgba(70, 127, 60, 0.95);
+    }
+
+    .view-submission-btn:focus-visible,
+    .view-btn:focus-visible {
+      outline: 3px solid rgba(70, 127, 60, 0.35);
+      outline-offset: 2px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(2, 6, 23, 0.55);
+      z-index: 140;
+    }
+
+    .modal-content {
+      position: relative;
+      width: min(92vw, 700px);
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: 18px;
+      border: 1px solid #d1fae5;
+      background: #ffffff;
+      box-shadow: 0 24px 70px -28px rgba(15, 23, 42, 0.5);
+      padding: 24px;
+    }
+
+    .close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 28px;
+      line-height: 1;
+      color: #64748b;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .close:hover {
+      color: #0f172a;
+    }
+
+    .modal label {
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 6px;
+      font-weight: 700;
+      font-size: 14px;
+      color: #1e293b;
+    }
+
+    .modal input,
+    .modal select,
+    .modal textarea {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .modal input:focus,
+    .modal select:focus,
+    .modal textarea:focus {
+      border-color: #60a650;
+      box-shadow: 0 0 0 4px rgba(74, 163, 85, 0.15);
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding-right: 28px;
+    }
+
+    .stats-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .stats-table th,
+    .stats-table td {
+      border-bottom: 1px solid #e2e8f0;
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    .stats-table th {
+      background: #edf7ea;
+      color: #1f3d1b;
+      font-weight: 800;
+    }
+
+    #noticeModal .modal-content {
+      width: min(92vw, 520px);
+      padding: 26px;
+      border-radius: 24px;
+    }
+
+    .notice-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .notice-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: #edf7ea;
+      color: #467f3c;
+      font-size: 20px;
+      flex: 0 0 auto;
+    }
+
+    .notice-badge.notice-error {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .notice-badge.notice-warning {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .notice-badge.notice-success {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .notice-eyebrow {
+      margin: 0 0 4px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #6b7280;
+    }
+
+    .notice-title {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 900;
+      color: #111827;
+    }
+
+    .notice-message {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #334155;
+      white-space: pre-line;
+    }
+
+    .notice-actions {
+      margin-top: 24px;
+      display: flex;
+      justify-content: flex-end;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen overflow-x-hidden bg-slate-50 font-sans text-slate-900 antialiased">
+  <div class="flex min-h-screen w-full">
+    <aside id="sidebar-container" class="hidden lg:block lg:w-[230px]"></aside>
+
+    <div class="flex min-w-0 flex-1 flex-col">
+      <header class="sticky top-0 z-30 border-b border-emerald-100 bg-forest-700 text-white shadow-sm">
+        <div class="px-4 py-5 sm:px-6 lg:px-8">
+          <h1 class="flex items-center gap-2 text-3xl font-black tracking-tight sm:text-4xl">
+            <i class="fa-solid fa-folder-tree"></i>
+            <span>Applications</span>
+          </h1>
+          <p class="mt-1 text-sm text-emerald-100">Review submissions, manage templates, and coordinate application actions.</p>
+        </div>
+      </header>
+
+      <main class="w-full flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+        <section id="dashboardStats" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"></section>
+
+        <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div id="applicationTypeHeader" style="display:none;" class="mb-4 flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <h2 id="applicationTypeTitle" class="text-2xl font-black text-slate-800"></h2>
+            <button id="manageTemplatesBtn" class="action-btn-secondary">
+              <i class="fa-solid fa-folder-open"></i>
+              Manage Templates
+            </button>
+          </div>
+
+          <div id="applicantsContainer" class="applicant-list" style="display:none;"></div>
+        </section>
+
+        <section id="filesSection" style="display:none;" class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 id="applicantTitle" class="text-2xl font-black text-slate-800"></h2>
+
+          <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table id="filesTable" class="min-w-full bg-white">
+              <thead>
+                <tr>
+                  <th>Label</th>
+                  <th>File Name</th>
+                  <th>Uploaded At</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="filesBody"></tbody>
+            </table>
+          </div>
+
+          <div id="scheduleContainer" style="display:none;" class="flex flex-wrap items-center gap-3 pt-2">
+            <button id="scheduleBtn" class="action-btn-main">Schedule Walk-in Appointment</button>
+            <button id="proceedBtn" class="action-btn-main" style="display:none;">Assign for Tree Tagging</button>
+            <button id="assignCuttingForesterBtn" class="action-btn-main" style="display:none;">Assign Forester for Cutting</button>
+            <button id="claimCertificateBtn" class="action-btn-main" style="display:none;">Claim Certificate</button>
+            <button id="commentBtn" class="action-btn-secondary" style="display:none;">Comment</button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="scheduleModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2 class="mb-3 text-2xl font-black text-slate-800">Schedule Walk-in Appointment</h2>
+
+      <label for="walkInPurpose">Purpose:</label>
+      <input type="text" id="walkInPurpose" placeholder="e.g., Document Submission" />
+
+      <label for="walkInDate">Appointment Date:</label>
+      <input type="date" id="walkInDate" required />
+
+      <label for="walkInTime">Appointment Time:</label>
+      <input type="time" id="walkInTime" required />
+
+      <label for="walkInAppointmentRemarks">Remarks (optional):</label>
+      <textarea id="walkInAppointmentRemarks" rows="3" placeholder="Additional notes..."></textarea>
+
+      <button id="saveAppointmentBtn" class="action-btn-main mt-4">Save Appointment</button>
+    </div>
+  </div>
+
+  <div id="inventoryModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" id="closeInventoryModal">&times;</span>
+      <h2 class="mb-3 text-2xl font-black text-slate-800">Tree Inventory Appointment</h2>
+
+      <div id="inventoryFormStep">
+        <label for="applicantNameInput">Applicant Name:</label>
+        <input type="text" id="applicantNameInput" readonly />
+
+        <label for="appointmentType">Appointment Type:</label>
+        <select id="appointmentType">
+          <option value="">-- Select Type --</option>
+          <option value="Tree Tagging">Tree Tagging</option>
+          <option value="Tree Inventory">Tree Inventory</option>
+        </select>
+
+        <label for="appointmentLocation">Location:</label>
+        <input type="text" id="appointmentLocation" placeholder="e.g., Applicant's property" />
+
+        <label for="appointmentRemarks">Remarks (optional):</label>
+        <textarea id="appointmentRemarks" rows="3" placeholder="Additional instructions..."></textarea>
+
+        <label>Assign Forester(s):</label>
+        <div id="foresterCheckboxList" class="max-h-56 overflow-y-auto rounded-xl border border-emerald-200 bg-emerald-50/50 p-3"></div>
+
+        <button id="reviewAppointmentBtn" class="action-btn-main mt-4">Review Appointment</button>
+      </div>
+
+      <div id="inventoryReviewStep" style="display:none;">
+        <h3 class="mb-3 text-xl font-black text-slate-800">Review Appointment</h3>
+        <p><strong>Applicant:</strong> <span id="reviewApplicant"></span></p>
+        <p><strong>Type:</strong> <span id="reviewType"></span></p>
+        <p><strong>Date:</strong> <span id="reviewDate"></span></p>
+        <p><strong>Location:</strong> <span id="reviewLocation"></span></p>
+        <p><strong>Remarks:</strong> <span id="reviewRemarks"></span></p>
+        <p><strong>Assigned Forester(s):</strong> <span id="reviewForesters"></span></p>
+
+        <div class="mt-4 flex flex-wrap gap-3">
+          <button id="backToEditBtn" class="action-btn-secondary">Back to Edit</button>
+          <button id="confirmAppointmentBtn" type="button" class="action-btn-main">Confirm and Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="commentModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" id="closeCommentModal">&times;</span>
+      <h2 class="mb-3 text-2xl font-black text-slate-800">Add Comment and Request Reupload</h2>
+
+      <label for="commentDocumentSelect">Select Document(s) to Comment On:</label>
+      <select id="commentDocumentSelect" multiple size="5"></select>
+
+      <label for="commentMessage">Your Comment:</label>
+      <textarea id="commentMessage" rows="4" placeholder="Explain what needs to be corrected..."></textarea>
+
+      <button id="sendCommentBtn" class="action-btn-main mt-4">Send Comment</button>
+    </div>
+  </div>
+
+  <div id="cuttingForesterModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" id="closeCuttingForesterModal">&times;</span>
+      <h2 class="mb-3 text-2xl font-black text-slate-800">Assign Cutting Forester</h2>
+
+      <div id="cuttingFormStep">
+        <label for="cuttingApplicantName">Applicant Name:</label>
+        <input type="text" id="cuttingApplicantName" readonly />
+
+        <label>Permit Type:</label>
+        <p id="cuttingPermitType" class="mb-2 mt-1 font-bold"></p>
+
+        <label for="cuttingLocation">Location:</label>
+        <input type="text" id="cuttingLocation" placeholder="e.g., Lot 123, Barangay XYZ" />
+
+        <label for="cuttingRemarks">Remarks (optional):</label>
+        <textarea id="cuttingRemarks" rows="3" placeholder="Additional instructions..."></textarea>
+
+        <label for="cuttingForesterMultiSelect">Assign Forester(s):</label>
+        <select id="cuttingForesterMultiSelect" multiple size="5"></select>
+
+        <button id="reviewCuttingBtn" class="action-btn-main mt-4">Review Assignment</button>
+      </div>
+
+      <div id="cuttingReviewStep" style="display:none;">
+        <h3 class="mb-3 text-xl font-black text-slate-800">Review Cutting Assignment</h3>
+        <p><strong>Applicant:</strong> <span id="cuttingReviewApplicant"></span></p>
+        <p><strong>Permit Type:</strong> <span id="cuttingReviewPermitType"></span></p>
+        <p><strong>Location:</strong> <span id="cuttingReviewLocation"></span></p>
+        <p><strong>Remarks:</strong> <span id="cuttingReviewRemarks"></span></p>
+        <p><strong>Assigned Forester(s):</strong> <span id="cuttingReviewForesters"></span></p>
+
+        <div class="mt-4 flex flex-wrap gap-3">
+          <button id="cuttingBackToEditBtn" class="action-btn-secondary">Back to Edit</button>
+          <button id="confirmCuttingBtn" class="action-btn-main">Confirm and Assign</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="filePreviewModal" class="modal" style="display:none;">
+    <div class="modal-content" style="width:min(96vw,1100px);">
+      <span class="close" id="closeFilePreview">&times;</span>
+      <div class="preview-header">
+        <h2 id="previewTitle" class="text-2xl font-black text-slate-800">File Preview</h2>
+        <a id="downloadFileBtn" class="action-btn-secondary" href="#" target="_blank" rel="noopener">
+          <i class="fa-solid fa-download"></i> Download
+        </a>
+      </div>
+      <iframe id="previewFrame" style="width:100%; height:70vh; border:1px solid #cbd5e1; border-radius:10px;"></iframe>
+    </div>
+  </div>
+
+  <div id="claimCertificateModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" id="closeClaimCertificateModal">&times;</span>
+      <h2 class="mb-3 text-2xl font-black text-slate-800">Notify Certificate Ready for Claim</h2>
+
+      <label for="claimApplicantName">Applicant Name:</label>
+      <input type="text" id="claimApplicantName" readonly />
+
+      <label>Certificate Type:</label>
+      <p id="claimCertificateType" class="mb-2 mt-1 font-bold"></p>
+
+      <label for="claimMessage">Message to Applicant:</label>
+      <textarea id="claimMessage" rows="4">Your certificate is now ready for pickup at the DENR Municipal Office in Aparri. Please bring a valid ID and your application reference number.</textarea>
+
+      <label for="claimRemarks">Additional Remarks (optional):</label>
+      <textarea id="claimRemarks" rows="3" placeholder="Office hours, special instructions, etc."></textarea>
+
+      <button id="sendClaimNotificationBtn" class="action-btn-main mt-4">Send Notification</button>
+    </div>
+  </div>
+
+  <div id="templateModal" class="modal" style="display:none;">
+    <div class="modal-content" style="width:min(92vw,920px);">
+      <span class="close" id="closeTemplateModal">&times;</span>
+      <h2 class="mb-1 text-2xl font-black text-slate-800">Manage Document Templates</h2>
+      <p class="mb-5 text-sm text-slate-500">Upload templates that applicants can download before they submit their requirements.</p>
+
+      <div id="existingTemplatesSection" class="mb-6">
+        <h3 class="mb-3 border-b border-emerald-200 pb-2 text-xl font-black text-forest-800">Current Templates</h3>
+        <div id="existingTemplatesList" class="max-h-[300px] overflow-y-auto"></div>
+      </div>
+
+      <div id="uploadNewTemplateSection">
+        <h3 class="mb-3 border-b border-emerald-200 pb-2 text-xl font-black text-forest-800">Add New Template</h3>
+
+        <label for="templateDocumentType">Document Type/Label:</label>
+        <input type="text" id="templateDocumentType" placeholder="e.g., Land Title, Tax Declaration" />
+        <p class="mt-1 text-xs text-slate-500">This label will be visible to applicants for required documents.</p>
+
+        <label for="templateTitle">Template Title:</label>
+        <input type="text" id="templateTitle" placeholder="e.g., Sample Land Title Format" />
+
+        <label for="templateDescription">Description (optional):</label>
+        <textarea id="templateDescription" rows="3" placeholder="Brief description for applicants..."></textarea>
+
+        <label for="templateFileInput">Upload Template File:</label>
+        <input type="file" id="templateFileInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
+        <p class="mt-1 text-xs text-slate-500">Supported formats: PDF, Word, Excel, JPG, PNG.</p>
+
+        <button id="uploadTemplateFileBtn" class="action-btn-main mt-4">Upload Template</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="noticeModal" class="modal" style="display:none;">
+    <div class="modal-content" role="alertdialog" aria-modal="true" aria-labelledby="noticeTitle">
+      <span class="close" id="closeNoticeModal">&times;</span>
+      <div class="notice-header">
+        <div id="noticeBadge" class="notice-badge notice-success">
+          <i class="fa-solid fa-circle-info"></i>
+        </div>
+        <div>
+          <p class="notice-eyebrow">TreeSure Admin</p>
+          <h2 id="noticeTitle" class="notice-title">Notice</h2>
+        </div>
+      </div>
+      <p id="noticeMessage" class="notice-message"></p>
+      <div class="notice-actions">
+        <button id="noticeOkBtn" class="action-btn-main" type="button">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      let noticeModal;
+      let noticeTitle;
+      let noticeMessage;
+      let noticeBadge;
+      let noticeOkBtn;
+      let closeNoticeModal;
+
+      function ensureNoticeElements() {
+        noticeModal = document.getElementById("noticeModal");
+        noticeTitle = document.getElementById("noticeTitle");
+        noticeMessage = document.getElementById("noticeMessage");
+        noticeBadge = document.getElementById("noticeBadge");
+        noticeOkBtn = document.getElementById("noticeOkBtn");
+        closeNoticeModal = document.getElementById("closeNoticeModal");
+
+        if (noticeOkBtn && !noticeOkBtn.dataset.bound) {
+          noticeOkBtn.dataset.bound = "1";
+          noticeOkBtn.addEventListener("click", () => {
+            noticeModal.style.display = "none";
+          });
+        }
+
+        if (closeNoticeModal && !closeNoticeModal.dataset.bound) {
+          closeNoticeModal.dataset.bound = "1";
+          closeNoticeModal.addEventListener("click", () => {
+            noticeModal.style.display = "none";
+          });
+        }
+
+        if (noticeModal && !noticeModal.dataset.bound) {
+          noticeModal.dataset.bound = "1";
+          noticeModal.addEventListener("click", (event) => {
+            if (event.target === noticeModal) {
+              noticeModal.style.display = "none";
+            }
+          });
+        }
+      }
+
+      window.showAppNotice = function (message, title = "Notice", tone = "success") {
+        ensureNoticeElements();
+
+        if (!noticeModal || !noticeTitle || !noticeMessage || !noticeBadge) return;
+
+        noticeTitle.textContent = title;
+        noticeMessage.textContent = String(message);
+        noticeBadge.className = "notice-badge";
+
+        if (tone === "error") {
+          noticeBadge.classList.add("notice-error");
+          noticeBadge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+        } else if (tone === "warning") {
+          noticeBadge.classList.add("notice-warning");
+          noticeBadge.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
+        } else {
+          noticeBadge.classList.add("notice-success");
+          noticeBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+        }
+
+        noticeModal.style.display = "flex";
+      };
+
+      window.alert = function (message) {
+        const text = String(message);
+        let tone = "success";
+        let title = "Notice";
+
+        if (/^⚠️|warning/i.test(text)) {
+          tone = "warning";
+          title = "Warning";
+        }
+
+        if (/error|failed/i.test(text)) {
+          tone = "error";
+          title = "Error";
+        }
+
+        window.showAppNotice(text, title, tone);
+      };
+
+      document.addEventListener("DOMContentLoaded", ensureNoticeElements);
+    })();
+
+    fetch("sidebar.html")
+      .then((res) => res.text())
+      .then((html) => {
+        document.getElementById("sidebar-container").innerHTML = html;
+
+        const current = window.location.pathname.split("/").pop();
+        document.querySelectorAll(".sidebar a").forEach((link) => {
+          if (link.getAttribute("href") === current) {
+            link.classList.add("active");
+          }
+        });
+
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = "login.html";
+          });
+        }
+
+        document.querySelectorAll(".dropdown-toggle").forEach((drop) => {
+          drop.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            document.querySelectorAll(".dropdown.open").forEach((openDropdown) => {
+              if (openDropdown !== drop.parentElement) {
+                openDropdown.classList.remove("open");
+              }
+            });
+
+            drop.parentElement.classList.toggle("open");
+          });
+        });
+
+        document.querySelectorAll(".sub-toggle").forEach((sub) => {
+          sub.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const subMenu = sub.nextElementSibling;
+            subMenu.classList.toggle("open");
+          });
+        });
+
+        document.addEventListener("click", (e) => {
+          if (!e.target.closest(".dropdown")) {
+            document.querySelectorAll(".dropdown.open").forEach((dropdown) => {
+              dropdown.classList.remove("open");
+            });
+          }
+        });
+
+        window.dispatchEvent(new Event("sidebarLoaded"));
+        document.dispatchEvent(new Event("sidebarLoaded"));
+
+        (function tryAttach(retries = 0) {
+          if (window.attachSidebarListeners) {
+            window.attachSidebarListeners();
+
+            const selectedType = localStorage.getItem("selectedApplicationType");
+            const selectedTitle = localStorage.getItem("selectedApplicationTitle");
+
+            if (selectedType && selectedTitle) {
+              localStorage.removeItem("selectedApplicationType");
+              localStorage.removeItem("selectedApplicationTitle");
+
+              setTimeout(() => {
+                const appTypeTitle = document.getElementById("applicationTypeTitle");
+                if (appTypeTitle && window.loadApplicants) {
+                  appTypeTitle.textContent = selectedTitle;
+                  window.loadApplicants(selectedType);
+                }
+              }, 100);
+            }
+            return;
+          }
+          if (retries >= 50) return;
+          setTimeout(() => tryAttach(retries + 1), 50);
+        })();
+      });
+  </script>
+
+  <script type="module" src="js/application-temp-fix.js"></script>
+  <script type="module" src="js/application.js"></script>
+</body>
+
+</html>

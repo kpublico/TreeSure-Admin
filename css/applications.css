@@ -1,0 +1,644 @@
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  padding: 20px;
+  margin-left: 230px; /* matches sidebar width */
+  transition: margin-left 0.3s ease;
+}
+
+/* ===== APPLICANT LIST (CTPO Folders) ===== */
+.applicant-list {
+  display: flex;
+  flex-wrap: wrap;                /* allows horizontal wrapping */
+  gap: 25px;                      /* space between folders */
+  justify-content: flex-start;    /* align folders to the left horizontally */
+  align-items: flex-start;
+  margin-top: 20px;
+  padding: 15px;
+} 
+
+/* ===== FOLDER CARD ===== */
+.applicant-folder {
+  background: #e8f5e9;            /* soft green background */
+  border: 2px solid #4caf50;      /* TreeSure green border */
+  border-radius: 12px;
+  width: 190px;
+  height: 150px;
+  padding: 15px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== HOVER EFFECT ===== */
+.applicant-folder:hover {
+  background: #c8e6c9;
+  transform: translateY(-5px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== FOLDER ICON ===== */
+.folder-icon {
+  font-size: 45px;
+  color: #388e3c;
+}
+
+/* ===== APPLICANT NAME ===== */
+.applicant-name {
+  margin-top: 10px;
+  font-weight: 600;
+  color: #2e7d32;
+  word-wrap: break-word;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* ===== LOADING SPINNER ===== */
+.spinner {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 3px solid #4caf50;
+  border-top: 3px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-top: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== SMOOTH APPEAR ANIMATION ===== */
+.applicant-folder {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== FILES TABLE ===== */
+#filesSection {
+  margin-top: 30px;
+}
+
+#filesSection table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#filesSection th, 
+#filesSection td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+#filesSection thead {
+  background-color: #4caf50;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+#filesSection tbody tr {
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #ddd;
+  transition: background 0.2s ease;
+}
+
+#filesSection tbody tr:nth-child(even) {
+  background-color: #e8f5e9; /* alternating row color */
+}
+
+#filesSection tbody tr:hover {
+  background-color: #c8e6c9;
+}
+
+#filesSection td button.action-btn {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+#filesSection td button.action-btn:hover {
+  background-color: #388e3c;
+  transform: scale(1.05);
+}
+
+/* ===== ACTION BUTTONS (Below Table) ===== */
+#scheduleContainer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  gap: 15px;
+}
+
+.action-btn-main {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.action-btn-main:hover {
+  background-color: #388e3c;
+  transform: scale(1.05);
+}
+
+/* ===== MODAL BACKGROUND ===== */
+.modal {
+  display: none; /* hidden by default */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+  backdrop-filter: blur(2px);
+}
+
+/* ===== MODAL CONTENT ===== */
+
+.modal-content {
+  background-color: #f9f9f9;
+  margin: 10% auto;
+  padding: 25px 30px;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  animation: slideDown 0.3s ease;
+}
+
+#filePreviewModal .modal-content {
+  width: 95%;
+  max-width: 1400px;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+#filePreviewFrame {
+  flex: 1;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  background: #f8f9fa;
+}
+
+#downloadLink {
+  text-align: center;
+  display: block;
+  margin-top: 8px;
+  color: #007bff;
+  font-weight: 500;
+}
+
+#downloadLink:hover {
+  text-decoration: underline;
+}
+
+
+@keyframes slideDown {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ===== MODAL CLOSE BUTTON ===== */
+.close {
+  color: #333;
+  float: right;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #4caf50;
+}
+
+/* ===== MODAL INPUTS ===== */
+.modal input, .modal select {
+  width: 100%;
+  padding: 8px 10px;
+  margin: 8px 0 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.modal button {
+  width: 100%;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 10px 0;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.preview-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #2e7d32;
+}
+
+#previewContainer {
+  background: #f9f9f9;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+#previewContainer img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+#previewFrame {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+}
+
+.action-btn {
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-btn:hover {
+  background-color: #1b5e20;
+}
+
+.action-btn i {
+  font-size: 14px;
+}
+  transition: background 0.3s ease;
+}
+
+.modal button:hover {
+  background-color: #388e3c;
+}
+/* Secondary Action Button (for Comment) */
+.action-btn-secondary {
+  background-color: #f0ad4e; /* orange tone for alert/feedback */
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+}
+
+.action-btn-secondary:hover {
+  background-color: #ec971f;
+  transform: translateY(-1px);
+}
+#commentModal textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  resize: vertical;
+  margin-top: 5px;
+}
+
+
+/* ===== TREE INVENTORY MODAL (APPOINTMENT SETUP) ===== */
+#treeInventoryModal {
+  display: none;
+  position: fixed;
+  z-index: 1100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  transition: opacity 0.3s ease;
+}
+
+/* Modal box */
+#treeInventoryModal .modal-content {
+  background: #ffffff;
+  margin: 5% auto;
+  padding: 25px 30px;
+  border-radius: 12px;
+  width: 95%;
+  max-width: 600px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s ease;
+}
+
+/* Reuse your modal close button styling */
+#treeInventoryModal .close {
+  float: right;
+  font-size: 24px;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+}
+#treeInventoryModal .close:hover {
+  color: #4caf50;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ===== FORM INPUTS ===== */
+#treeInventoryModal label {
+  display: block;
+  font-weight: 600;
+  margin-top: 1rem;
+  color: #333;
+}
+
+#treeInventoryModal input[type="text"],
+#treeInventoryModal input[type="date"],
+#treeInventoryModal textarea,
+#treeInventoryModal select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+#treeInventoryModal input:focus,
+#treeInventoryModal textarea:focus,
+#treeInventoryModal select:focus {
+  border-color: #4caf50;
+  outline: none;
+}
+
+#treeInventoryModal textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ===== FORESTER MULTISELECT TAGS ===== */
+#treeInventoryModal .forester-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+#treeInventoryModal .forester-list span {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ===== BUTTONS ===== */
+#treeInventoryModal button {
+  font-family: inherit;
+  cursor: pointer;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+#treeInventoryModal #reviewAppointmentBtn,
+#treeInventoryModal #confirmAppointmentBtn {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+#treeInventoryModal #reviewAppointmentBtn:hover,
+#treeInventoryModal #confirmAppointmentBtn:hover {
+  background-color: #388e3c;
+  transform: translateY(-1px);
+}
+
+#treeInventoryModal #backToEditBtn {
+  background-color: #ccc;
+  color: #333;
+}
+
+#treeInventoryModal #backToEditBtn:hover {
+  background-color: #bdbdbd;
+}
+
+#treeInventoryModal button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== REVIEW STEP ===== */
+#inventoryReviewStep {
+  display: none;
+  animation: fadeIn 0.25s ease;
+}
+
+#inventoryReviewStep h3 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #2e7d32;
+  font-weight: 700;
+}
+
+#reviewTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fdfdfd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+#reviewTable th,
+#reviewTable td {
+  text-align: left;
+  padding: 12px 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+#reviewTable th {
+  background-color: #f1f8e9;
+  color: #388e3c;
+  font-weight: 600;
+  width: 35%;
+}
+
+#reviewTable tr:last-child td {
+  border-bottom: none;
+}
+
+#reviewForesters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+#reviewForesters span {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ===== STEP TRANSITION ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+/* Sidebar remains visible on website screens (≥769px) */
+@media (min-width: 769px) {
+  .main-content {
+    margin-left: 230px;
+  }
+}
+
+/* Mobile layout - sidebar adjusts on small screens (<769px) */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 180px;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 600px) {
+  #treeInventoryModal .modal-content {
+    width: 92%;
+    padding: 20px;
+  }
+
+  #treeInventoryModal button {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  #reviewForesters {
+    flex-direction: column;
+  }
+}
+
+/* --- Custom Notification (Toast/Snackbar) Styles --- */
+
+#custom-notification-container {
+    position: fixed;
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust for element size */
+    z-index: 9999;
+    pointer-events: none; /* Allows clicks through when no notification is visible */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.custom-notification {
+    margin: 10px 0;
+    padding: 15px 30px;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+    min-width: 250px;
+    max-width: 400px;
+    pointer-events: auto;
+}
+
+.custom-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Specific styles for notification types */
+.custom-notification.success {
+    background-color: #4caf50; /* Green */
+}
+
+.custom-notification.error {
+    background-color: #f44336; /* Red */
+}
+
+.custom-notification.warning {
+    background-color: #ff9800; /* Orange */
+}
+
+.custom-notification.info {
+    background-color: #2196f3; /* Blue */
+}

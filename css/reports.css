@@ -1,0 +1,430 @@
+/* ================================
+   📊 Reports Page Styles (2 Charts per Row, Responsive + Animated)
+   ================================ */
+
+/* General Layout */
+body {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  display: flex;
+  background-color: #f4f6f8;
+  color: #333;
+}
+
+
+
+/* Main Content */
+.main-content {
+  margin-left: 230px;
+  padding: 30px;
+  width: calc(100% - 230px);
+}
+
+.main-content h1 {
+  font-size: 26px;
+  margin-bottom: 25px;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+/* Summary Cards */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  padding: 18px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+}
+
+.card h3 {
+  margin-bottom: 10px;
+  color: #388e3c;
+  font-size: 18px;
+}
+
+.card span {
+  font-size: 22px;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+/* Tabs Navigation */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  background: #fff;
+  border: 2px solid #81c784;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  background: #c8e6c9;
+}
+
+.tab.active {
+  background: #2e7d32;
+  color: white;
+  border-color: #2e7d32;
+}
+
+/* Filters Section */
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+}
+
+.date-range-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-range-filter label {
+  font-weight: 500;
+  color: #2e7d32;
+  white-space: nowrap;
+}
+
+.filters select,
+.filters input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  min-width: 160px;
+}
+
+.filters button {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.filters button:hover {
+  background: #1b5e20;
+}
+
+/* Tables */
+.table-container {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead {
+  background-color: #2e7d32;
+  color: #fff;
+}
+
+th,
+td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+  background-color: #f1f8e9;
+}
+
+/* QR Code Images in Table */
+td img {
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  transition: transform 0.2s ease;
+}
+
+td img:hover {
+  transform: scale(2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  position: relative;
+}
+
+/* ================================
+   📊 Responsive & Animated Charts
+   ================================ */
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+  margin-bottom: 40px;
+  align-items: stretch;
+}
+
+.chart-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 380px;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInUp 0.6s ease both;
+}
+
+.chart-box h3 {
+  color: #2e7d32;
+  font-size: 18px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Chart Canvas Responsiveness */
+.chart-box canvas {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 350px;
+}
+
+/* Hover Elevation */
+.chart-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive Behavior */
+@media (max-width: 1024px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .chart-box {
+    padding: 15px;
+    min-height: 300px;
+  }
+
+  .chart-box h3 {
+    font-size: 16px;
+  }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Export Buttons */
+.export-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.export-buttons button {
+  background: #388e3c;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 500;
+}
+
+.export-buttons button:hover {
+  background: #1b5e20;
+}
+
+.export-buttons button:disabled {
+  background: #9e9e9e;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+#refreshData {
+  background: #2196f3;
+}
+
+#refreshData:hover {
+  background: #1976d2;
+}
+
+/* Activity Logs & Insights */
+.activity-section,
+.insight-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 25px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.activity-section h3,
+.insight-section h3 {
+  color: #2e7d32;
+  margin-bottom: 12px;
+}
+
+.activity-section ul,
+.insight-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.activity-section li,
+.insight-section li {
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.activity-section li:last-child,
+.insight-section li:last-child {
+  border-bottom: none;
+}
+
+/* Admin Controls */
+.admin-controls {
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 25px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-controls label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+
+
+/* ===== APPLICATION DETAILS MODAL ===== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  background-color: #f9f9f9;
+  margin: 5% auto;
+  padding: 25px 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  animation: slideDown 0.3s ease;
+  position: relative;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.close {
+  color: #333;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 20px;
+}
+
+.close:hover,
+.close:focus {
+  color: #4caf50;
+}
+
+/* ===== VIEW DETAILS BUTTON ===== */
+.view-details-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.view-details-btn:hover {
+  background-color: #388e3c;
+  transform: scale(1.05);
+}
+
+.view-details-btn:active {
+  transform: scale(0.98);
+}

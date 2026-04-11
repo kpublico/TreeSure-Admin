@@ -1,0 +1,179 @@
+/* ---------- GLOBAL LAYOUT ---------- */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f6f8;
+  color: #333;
+}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 230px;
+  height: 100%;
+  background-color: #f4f6f8;
+  padding: 20px 0;
+  color: #467f3c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1000;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08),
+              0 4px 10px rgba(0, 0, 0, 0.06);
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(70, 127, 60, 0.45);
+  border-radius: 999px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.sidebar .logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.sidebar .logo {
+  width: 70px;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.sidebar h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #467f3c;
+  text-align: center;
+}
+
+.sidebar .menu {
+  width: 100%;
+}
+
+.sidebar .menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar .menu ul li a,
+.sidebar .menu ul li button.app-type-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #467f3c;
+  text-decoration: none;
+  padding: 12px 25px 12px 35px;
+  border-radius: 8px;
+  transition: background 0.25s ease, transform 0.1s ease, color 0.25s ease;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+}
+
+.sidebar .menu ul li a i,
+.sidebar .menu ul li button i {
+  font-size: 1.1rem;
+  width: 20px;
+  text-align: center;
+}
+
+/* Hover / Active States */
+.sidebar .menu ul li a:hover,
+.sidebar .menu ul li a.active,
+.sidebar .menu ul li button.app-type-btn:hover {
+  background: #ddeed7;
+  color: #3b6c33;
+  transform: translateX(3px);
+}
+
+.sidebar .menu ul li a:hover i,
+.sidebar .menu ul li a.active i,
+.sidebar .menu ul li button.app-type-btn:hover i {
+  color: #3b6c33;
+}
+
+
+/* ---------- MAIN CONTENT ---------- */
+.main-content {
+  flex: 1;
+  margin-left: 230px;
+  padding: 25px;
+  transition: margin-left 0.3s ease;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 180px;
+  }
+
+  .main-content {
+    margin-left: 180px;
+  }
+}
+
+/* ---------- DROPDOWN MENUS ---------- */
+/* Applications dropdown menu hidden by default */
+.dropdown .dropdown-menu {
+  display: none;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: #f4f6f8;
+  border-radius: 5px;
+ 
+}
+
+/* Show dropdown menu when parent has 'open' */
+.dropdown.open .dropdown-menu {
+  display: block;
+  background-color: #e8e8e8;
+}
+
+/* Sub-menu hidden by default */
+.sub-menu {
+  display: none;
+  padding-left: 10px;
+}
+
+/* Show sub-menu when parent has 'open' */
+.sub-menu.open {
+  display: block;
+  background-color: #eaeaea;
+}
+
+/* Optional hover effects */
+.app-type-btn:hover {
+  background-color: #ddeed7;
+}
+
+

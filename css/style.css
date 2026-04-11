@@ -1,0 +1,83 @@
+/* ---------- IMPORT FONT ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* ---------- RESET & LAYOUT ---------- */
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+  font-family: 'Poppins', sans-serif;
+}
+html, body { height: 100%; }
+
+body.login-page {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #95e198 0%, #d2e0d2 100%);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding: 20px;
+}
+
+/* ---------- LOGIN CARD ---------- */
+.login-box {
+  background: #ffffff;
+  width: 380px;
+  max-width: 100%;
+  padding: 36px 28px;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.logo { width: 72px; height: auto; }
+.logo-text { color: #2f5d3a; font-size: 1.6rem; font-weight: 700; }
+
+form { width: 100%; display: flex; flex-direction: column; gap: 12px; text-align: left; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 13px; color: #444; font-weight: 600; }
+.form-group input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #d0d0d0;
+  font-size: 14px;
+  outline: none;
+  transition: box-shadow .15s, border-color .15s;
+}
+.form-group input:focus {
+  border-color: #4caf50;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.12);
+}
+
+button[type="submit"] {
+  margin-top: 6px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  background: #4caf50;
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: transform .12s ease, background .12s;
+}
+button[type="submit"]:hover { background: #2e7d32; transform: translateY(-1px); }
+
+@media (max-width: 420px) {
+  .login-box { padding: 24px 18px; width: 94%; }
+  .logo { width: 60px; }
+  .logo-text { font-size: 1.3rem; }
+}
+

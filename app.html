@@ -1,0 +1,79 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>TreeSure App</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/trees.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body>
+  <!-- Sidebar --> 
+  <div class="sidebar">
+    <div class="logo-container">
+      <img src="assets/images/treesurelogo.png" alt="TreeSure Logo" class="logo" />
+      <span class="logo-text">TreeSure</span>
+    </div>
+    <ul>
+      <li><a href="#/dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+      <li><a href="#/trees"><i class="fa-solid fa-tree"></i> Trees</a></li>
+      <li><a href="#/users"><i class="fa-solid fa-users"></i> Users</a></li>
+      <li><a href="#/applications"><i class="fa-solid fa-file-lines"></i> Applications</a></li>
+      <li><a href="#/reports"><i class="fa-solid fa-chart-line"></i> Reports</a></li>
+      <li><a href="#/settings"><i class="fa-solid fa-gear"></i> Settings</a></li>
+      <li><a href="#" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="app-content">
+    <h1>Loading...</h1>
+  </div>
+
+  <script type="module">
+    // Simple route system
+    const routes = {
+      '/dashboard': 'pages/dashboard.html',
+      '/trees': 'pages/trees.html',
+      '/users': 'pages/users.html',
+      '/applications': 'pages/applications.html',
+      '/reports': 'pages/reports.html',
+      '/settings': 'pages/settings.html'
+    };
+
+    const appContent = document.getElementById('app-content');
+
+    async function loadRoute() {
+      const hash = window.location.hash.slice(1) || '/dashboard';
+      const route = routes[hash] || routes['/dashboard'];
+
+      try {
+        const res = await fetch(route);
+        const html = await res.text();
+        appContent.innerHTML = html;
+
+        // Optionally load route-specific JS
+        const scriptPath = `js${hash}.js`; // e.g., js/trees.js
+        if (hash !== '/dashboard') {
+          import(scriptPath).catch(() => {});
+        }
+      } catch (err) {
+        appContent.innerHTML = `<h2>404 - Page not found</h2>`;
+      }
+    }
+
+    window.addEventListener('hashchange', loadRoute);
+    window.addEventListener('load', loadRoute);
+
+    // Logout handler
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('You have been logged out.');
+      // Add logout logic here
+    });
+  </script>
+</body>
+
+</html> -->

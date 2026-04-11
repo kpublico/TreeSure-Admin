@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports - TreeSure</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"]
+          },
+          colors: {
+            forest: {
+              50: "#f1f8ee",
+              100: "#ddeed7",
+              200: "#bddcaf",
+              300: "#98c982",
+              500: "#5aa04f",
+              600: "#4f9245",
+              700: "#467f3c",
+              800: "#3b6c33",
+              900: "#2f5528"
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    .tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #fff;
+      color: #475569;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 10px 18px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .tab:hover {
+      border-color: #9ca3af;
+      background: #f8fafc;
+      color: #334155;
+    }
+
+    .tab.active {
+      background: #467f3c;
+      border-color: #467f3c;
+      color: #fff;
+      box-shadow: 0 8px 20px -12px rgba(70, 127, 60, 0.7);
+    }
+
+    #reportTable thead th {
+      white-space: nowrap;
+    }
+
+    #reportTable td,
+    #reportTable th {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: middle;
+      text-align: left;
+    }
+
+    #reportTable tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .view-details-btn {
+      border: 1px solid #467f3c;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #467f3c;
+      color: #ffffff;
+      cursor: pointer;
+    }
+
+    .view-details-btn:hover {
+      background: #3b6c33;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(2, 6, 23, 0.55);
+      z-index: 130;
+    }
+
+    .modal-content {
+      position: relative;
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid #d1fae5;
+      background: #fff;
+      box-shadow: 0 24px 70px -30px rgba(15, 23, 42, 0.45);
+      padding: 20px;
+    }
+
+    .close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      color: #64748b;
+    }
+
+    .close:hover {
+      color: #0f172a;
+    }
+
+    @media print {
+      #sidebar-container,
+      #mobileSidebarBackdrop,
+      #mobileSidebarPanel,
+      .export-buttons,
+      .tabs,
+      .filters,
+      #chartsSection,
+      #adminSection {
+        display: none !important;
+      }
+
+      .reports-content {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen overflow-x-hidden bg-slate-50 font-sans text-slate-900 antialiased">
+  <div class="flex min-h-screen w-full">
+    <aside id="sidebar-container" class="hidden lg:block lg:w-[230px]"></aside>
+
+    <div class="reports-content flex min-w-0 flex-1 flex-col">
+      <header class="sticky top-0 z-30 border-b border-emerald-100 bg-forest-700 text-white shadow-sm">
+        <div class="px-4 py-5 sm:px-6 lg:px-8">
+          <h1 class="flex items-center gap-2 text-4xl font-black tracking-tight">
+            <span>📋</span>
+            <span>Reports Dashboard</span>
+          </h1>
+          <p class="mt-1 text-sm text-emerald-100">Comprehensive analytics and system summaries</p>
+        </div>
+      </header>
+
+      <main class="w-full flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+        <section class="space-y-4">
+          <h3 class="text-3xl font-black text-slate-800">📤 Export Options</h3>
+          <div class="export-buttons flex flex-wrap gap-3">
+            <button id="exportPDF" class="inline-flex items-center gap-2 rounded-xl bg-forest-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-forest-800"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+            <button id="exportExcel" class="inline-flex items-center gap-2 rounded-xl bg-forest-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-forest-800"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+            <button id="exportCSV" class="inline-flex items-center gap-2 rounded-xl bg-forest-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-forest-800"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+            <button id="printReport" class="inline-flex items-center gap-2 rounded-xl bg-forest-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-forest-800"><i class="fa-solid fa-print"></i> Print</button>
+            <button id="refreshData" class="inline-flex items-center gap-2 rounded-xl bg-forest-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-forest-800"><i class="fa-solid fa-rotate-right"></i> Refresh Data</button>
+          </div>
+        </section>
+
+        <section class="tabs flex flex-wrap gap-3">
+          <button class="tab active" data-tab="trees">🌳 Trees</button>
+          <button class="tab" data-tab="ctpo">🪪 CTPO</button>
+          <button class="tab" data-tab="pltp">🪵 PLTP</button>
+          <button class="tab" data-tab="splt">🪵 SPLTP</button>
+          <button class="tab" data-tab="ptc">📋 Permit to Cut</button>
+          <button class="tab" data-tab="chainsaw">🪚 Chainsaw Permit</button>
+          <button class="tab" data-tab="cov">📜 COV</button>
+        </section>
+
+        <section class="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm filters">
+          <h3 class="text-3xl font-black text-slate-800">📍 Filters &amp; Search</h3>
+
+          <div class="filter-row grid gap-3 lg:grid-cols-5">
+            <input type="text" id="keywordSearch" placeholder="Search keyword..." class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100" />
+
+            <select id="appointmentTypeFilter" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100">
+              <option value="all">All Application Types</option>
+            </select>
+
+            <select id="foresterFilter" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100">
+              <option value="all">All Foresters</option>
+            </select>
+
+            <select id="applicantFilter" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100">
+              <option value="all">All Applicants</option>
+            </select>
+
+            <select id="speciesFilter" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100">
+              <option value="all">All Species</option>
+            </select>
+          </div>
+
+          <div class="date-range-filter grid gap-3 md:grid-cols-2">
+            <div>
+              <label for="startDate" class="mb-1 block text-sm font-bold text-emerald-900">📅 From:</label>
+              <input type="date" id="startDate" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100" />
+            </div>
+            <div>
+              <label for="endDate" class="mb-1 block text-sm font-bold text-emerald-900">📅 To:</label>
+              <input type="date" id="endDate" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100" />
+            </div>
+          </div>
+        </section>
+
+        <section class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm data-table" id="tableSection">
+          <h3 class="text-3xl font-black text-slate-800">📋 Detailed Data</h3>
+
+          <div id="loadingIndicator" class="hidden rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+            <i class="fa-solid fa-spinner fa-spin"></i> Loading reports...
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table id="reportTable" class="min-w-full bg-white text-sm">
+              <thead id="applicationsHeader" style="display:none;" class="bg-emerald-100 text-left font-bold text-emerald-950">
+                <tr>
+                  <th>Date</th>
+                  <th>Applicant</th>
+                  <th>Submission ID</th>
+                  <th>Application Type</th>
+                  <th>Status</th>
+                  <th>Uploads</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+
+              <thead id="treesHeader" style="display:none;" class="bg-emerald-100 text-left font-bold text-emerald-950">
+                <tr>
+                  <th>Tree ID</th>
+                  <th>Application Type</th>
+                  <th>Applicant</th>
+                  <th>Species</th>
+                  <th>Diameter</th>
+                  <th>Height</th>
+                  <th>Volume</th>
+                  <th>Location</th>
+                  <th>Latitude</th>
+                  <th>Longitude</th>
+                  <th>Forester</th>
+                  <th>Status</th>
+                  <th>Date Tagged</th>
+                  <th>QR Code</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td colspan="14">Loading data...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm charts" id="chartsSection">
+          <h3 class="text-3xl font-black text-slate-800">📊 Visual Analytics</h3>
+          <div class="charts-grid grid gap-4 lg:grid-cols-2">
+            <div class="chart-box rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <h3 class="mb-3 text-lg font-bold text-emerald-900">📊 Application Status Distribution</h3>
+              <canvas id="statusChart" height="220"></canvas>
+            </div>
+            <div class="chart-box rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <h3 class="mb-3 text-lg font-bold text-emerald-900">🌿 Tree Species Distribution</h3>
+              <canvas id="speciesChart" height="220"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm admin-controls" id="adminSection">
+          <h3 class="text-3xl font-black text-slate-800">⚙️ Report Settings</h3>
+          <label class="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-slate-700"><input type="checkbox" id="autoRefresh" /> Auto-refresh reports</label>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="mobileSidebarBackdrop" class="fixed inset-0 z-40 hidden bg-slate-950/50 lg:hidden"></div>
+  <aside id="mobileSidebarPanel" class="fixed inset-y-0 left-0 z-50 hidden w-72 overflow-y-auto bg-white shadow-2xl lg:hidden"></aside>
+
+  <div id="applicationDetailsModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width: 800px; max-height: 80vh; overflow-y: auto;">
+      <span class="close" id="closeDetailsModal">&times;</span>
+      <h2 class="mb-3 text-2xl font-black text-emerald-900">Application Details</h2>
+      <div id="applicationDetailsContent"></div>
+    </div>
+  </div>
+
+  <script type="module" src="./js/reports.js"></script>
+
+  <script>
+    fetch("sidebar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar-container").innerHTML = html;
+        document.getElementById("mobileSidebarPanel").innerHTML = html;
+
+        const current = window.location.pathname.split("/").pop();
+        document.querySelectorAll(".sidebar a").forEach(link => {
+          if (link.getAttribute("href") === current) {
+            link.classList.add("active");
+          }
+        });
+
+        document.querySelectorAll("#mobileSidebarPanel .sidebar a").forEach(link => {
+          if (link.getAttribute("href") === current) {
+            link.classList.add("active");
+          }
+        });
+
+        document.querySelectorAll("#sidebar-container #logoutBtn, #mobileSidebarPanel #logoutBtn").forEach(logoutBtn => {
+          logoutBtn.addEventListener("click", e => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = "login.html";
+          });
+        });
+
+        document.querySelectorAll("#sidebar-container .dropdown-toggle, #mobileSidebarPanel .dropdown-toggle").forEach(drop => {
+          drop.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            document.querySelectorAll(".dropdown.open").forEach(openDropdown => {
+              if (openDropdown !== drop.parentElement) {
+                openDropdown.classList.remove("open");
+              }
+            });
+
+            drop.parentElement.classList.toggle("open");
+          });
+        });
+
+        document.querySelectorAll("#sidebar-container .sub-toggle, #mobileSidebarPanel .sub-toggle").forEach(sub => {
+          sub.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation();
+            sub.nextElementSibling.classList.toggle("open");
+          });
+        });
+
+        document.addEventListener("click", e => {
+          if (!e.target.closest(".dropdown")) {
+            document.querySelectorAll(".dropdown.open").forEach(dropdown => {
+              dropdown.classList.remove("open");
+            });
+          }
+        });
+
+        const appButtons = [
+          { id: "ctpoBtn", type: "ctpo", title: "CTPO Applications" },
+          { id: "pltpBtn", type: "pltp", title: "PLTP Applications" },
+          { id: "spltpBtn", type: "spltp", title: "SPLTP Applications" },
+          { id: "permitCutBtn", type: "ptc", title: "Permit to Cut Applications" },
+          { id: "cttBtn", type: "ctt", title: "Transport Permit (CTT)" },
+          { id: "chainsawBtn", type: "chainsaw", title: "Chainsaw Registration" },
+        ];
+
+        appButtons.forEach(btn => {
+          const element = document.getElementById(btn.id);
+          if (element) {
+            element.addEventListener("click", () => {
+              localStorage.setItem("selectedApplicationType", btn.type);
+              localStorage.setItem("selectedApplicationTitle", btn.title);
+              window.location.href = "applications.html";
+            });
+          }
+        });
+
+        const mobileToggle = document.getElementById("mobileSidebarToggle");
+        const mobilePanel = document.getElementById("mobileSidebarPanel");
+        const mobileBackdrop = document.getElementById("mobileSidebarBackdrop");
+
+        const closeMobileSidebar = () => {
+          mobilePanel.classList.add("hidden");
+          mobileBackdrop.classList.add("hidden");
+        };
+
+        mobileToggle?.addEventListener("click", () => {
+          mobilePanel.classList.remove("hidden");
+          mobileBackdrop.classList.remove("hidden");
+        });
+
+        mobileBackdrop?.addEventListener("click", closeMobileSidebar);
+        document.querySelectorAll("#mobileSidebarPanel a").forEach(link => {
+          link.addEventListener("click", closeMobileSidebar);
+        });
+      });
+  </script>
+
+  <script type="module" src="js/application-temp-fix.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
+</body>
+
+</html>

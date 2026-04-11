@@ -1,0 +1,450 @@
+/* ------------------------------
+   BASE STYLES
+------------------------------ */
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #f4f6f9;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+/* ------------------------------
+   SETTINGS CONTAINER
+------------------------------ */
+.settings-container {
+  margin-left: 260px; /* adjust for sidebar width */
+  margin-top: 60px;
+  padding: 2rem 3rem;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  max-width: 1400px;          /* ⬅️ wider */
+  width: calc(100% - 280px);  /* adjusts with screen */
+  height: 500px;              /* ⬅️ shorter height */
+  overflow-y: auto;           /* allows scrolling if content is taller */
+  margin-right: auto;
+  margin-bottom: 2rem;
+}
+
+
+.settings-container h2 {
+  font-size: 2rem;
+  margin-bottom: 1.8rem;
+  color: #222;
+  border-bottom: 2px solid #e3e3e3;
+  padding-bottom: 0.7rem;
+  font-weight: 600;
+}
+
+/* ------------------------------
+   SETTINGS LIST
+------------------------------ */
+.settings-list {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 2rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.settings-item {
+  flex: 1;
+  min-width: 260px;
+  max-width: 350px;
+  background: #28a745;
+  padding: 2rem 1.5rem;
+  border-radius: 18px;
+  text-align: center;
+  font-size: 1.1rem;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #238636;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-item i {
+  font-size: 2.4rem;
+  margin-bottom: 1rem;
+  color: #fff;
+  transition: transform 0.3s;
+}
+
+.settings-item:hover i {
+  transform: scale(1.1);
+}
+
+.settings-item:hover {
+  background: #218838;
+  box-shadow: 0 10px 25px rgba(33, 136, 56, 0.25);
+  transform: translateY(-5px);
+}
+
+/* ------------------------------
+   MODAL STYLING
+------------------------------ */
+/* ------------------------------
+   MODAL STYLING
+------------------------------ */
+.modal{
+
+    position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+  z-index: 1000;
+  min-width: 350px;   /* minimum width */
+  max-width: 90%;     /* never exceed screen width */
+  width: 700px;       /* increased width for form */
+  border-radius: 12px;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+  text-align: center;
+  animation: fadeIn 0.3s ease-out;
+}
+.message-modal {
+   position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;       /* hidden by default */
+  min-width: 250px;    /* keep it compact */
+  max-width: 300px;    /* prevent it from growing too wide */
+  width: auto;         /* size based on content */
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  font-weight: 500;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease-out;
+  background-color: #fff;  /* default, will be overridden for success/error */
+  color: #333;
+
+}
+
+.modal .modal-content {
+  background-color: #fff;
+  color: #333;
+  padding: 2.5rem 3rem;
+  border-radius: 18px;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+
+.close {
+  position: absolute;
+  right: 20px;
+  top: 15px;
+  color: #888;
+  font-size: 1.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.close:hover {
+  color: #000;
+}
+
+/* ------------------------------
+   FORM STYLING
+------------------------------ */
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  gap: 1rem;
+  width: 100%;
+}
+
+.form-row label {
+  flex: 0 0 40%;
+  font-weight: 500;
+  color: #333;
+  text-align: right;
+}
+
+.form-row input[type="password"],
+.form-row input[type="text"],
+.form-row input[type="email"] {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-row input:focus {
+  border-color: #0078ff;
+  box-shadow: 0 0 6px rgba(0, 120, 255, 0.2);
+  outline: none;
+}
+
+.modal-content button {
+  display: block;
+  margin: 1.5rem auto 0 auto;
+}
+
+/* ------------------------------
+   BUTTONS
+------------------------------ */
+button {
+  background-color: #28a745;
+  color: #fff;
+  border: 1px solid #238636;
+  padding: 0.9rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #218838;
+  color: #fff;
+  transform: translateY(-2px);
+  border: 1px solid #1e7e34;
+}
+
+/* ------------------------------
+   MESSAGE MODAL STYLING
+------------------------------ */
+.message-modal {
+  padding: 1.5rem 2rem;
+  font-weight: 500;
+}
+
+/* Success/ Error background colors */
+.message-success {
+  background-color: #28a745;  /* green */
+  color: #fff;
+}
+
+.message-error {
+  background-color: #dc3545;  /* red */
+  color: #fff;
+}
+
+.message-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* ------------------------------
+   ANIMATIONS
+------------------------------ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -55%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* ------------------------------
+   RESPONSIVE DESIGN
+------------------------------ */
+@media (max-width: 950px) {
+  .settings-list {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .settings-item {
+    width: 90%;
+    max-width: 400px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 100%;
+  }
+
+  .form-row label {
+    text-align: left;
+    width: 100%;
+  }
+
+  .modal,
+  .message-modal {
+    width: 90%;
+  }
+
+  .modal .modal-content {
+    padding: 1.8rem;
+  }
+}
+
+
+#adminList {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+  max-height: 250px;
+  overflow-y: auto;
+  border: none; /* remove border entirely */
+  border-radius: 10px;
+  background: #f9f9f9;
+}
+
+
+#adminList li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+#adminList li:last-child {
+  border-bottom: none;
+}
+
+#adminList button.removeAdminBtn {
+  background-color: #dc3545;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+}
+
+#adminList button.removeAdminBtn:hover {
+  background-color: #c82333;
+}
+body.theme-light {
+  background-color: #f4f6f9;
+  color: #333;
+}
+
+body.theme-dark {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+}
+
+body.theme-dark .settings-container {
+  background: #2a2a2a;
+  color: #f0f0f0;
+}
+
+body.theme-dark .settings-item {
+  background: #444;
+  border: 1px solid #666;
+}
+
+body.theme-dark button {
+  background-color: #555;
+  border: 1px solid #888;
+}
+
+body.theme-dark input,
+body.theme-dark select {
+  background-color: #333;
+  color: #f0f0f0;
+  border: 1px solid #555;
+}
+/* Remove underline in modal headers (like Manage Admin Accounts) */
+.modal-content h2 {
+  border-bottom: none;
+  margin-bottom: 1.2rem;
+}
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 2.5rem; /* Space for the eye icon */
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  color: #888;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+}
+
+.toggle-password:hover {
+  color: #28a745;
+}
+
+/* Make all inputs in Manage Admin Accounts modal the same width */
+#manageAdminsModal .form-row input,
+#manageAdminsModal .form-row .password-wrapper {
+  width: 100%;
+  max-width: 400px; /* consistent width */
+  box-sizing: border-box;
+}
+
+#manageAdminsModal .form-row .password-wrapper input {
+  width: 100%; /* input fills wrapper */
+}
+
+/* Labels fixed width for alignment */
+#manageAdminsModal .form-row label {
+  flex: 0 0 100px; /* adjust width of labels to align inputs */
+  text-align: right;
+  font-weight: 500;
+}
+
+/* Ensure form-row keeps label + input aligned */
+#manageAdminsModal .form-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+
+/* ------------------------------
+   PROFILE MODAL ADJUSTMENTS
+------------------------------ */
+
+
+#profilePreferencesModal .form-row label {
+  font-weight: 600;
+  width: 450px; /* control how far label extends before input */
+  text-align: right; /* aligns text nicely with input fields */
+}
+
+#profilePreferencesModal .form-row {
+  display: flex;           /* arrange inputs in a row */
+  justify-content: flex-start; /* align items to the left */
+  gap: 1rem;               /* space between inputs */
+  flex-wrap: wrap;         /* wrap to next line if needed */
+}
+
+#profilePreferencesModal .form-row input {
+  width: 120px;           /* shorter textbox */
+  padding: 0.6rem 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+#profilePreferencesModal {
+  width: fit-content;
+  max-width: 90%;
+}
+

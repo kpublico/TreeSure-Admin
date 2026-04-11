@@ -1,0 +1,12 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "DASHBOARD_ENHANCEMENTS.md",
+      "DUMMY_DATA_GUIDE.md"
+    ]
+  }
+}
