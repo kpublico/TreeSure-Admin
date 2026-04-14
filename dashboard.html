@@ -443,6 +443,58 @@
   <div id="mobileSidebarBackdrop" class="fixed inset-0 z-40 hidden bg-slate-950/50 lg:hidden"></div>
   <aside id="mobileSidebarPanel" class="fixed inset-y-0 left-0 z-50 hidden w-72 overflow-y-auto bg-white shadow-2xl lg:hidden"></aside>
 
+  <div id="dashboardChatbot" class="fixed bottom-6 right-6 z-[120] flex flex-col items-end gap-2">
+    <p class="rounded-full border border-forest-200 bg-white/95 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-forest-700 shadow-sm">TreeSure Assistant</p>
+    <button id="dashboardChatbotToggle" type="button" aria-label="Open dashboard chatbot" class="group relative inline-flex h-14 w-14 items-center justify-center rounded-full border border-forest-300/80 bg-gradient-to-r from-forest-700 to-forest-600 text-white shadow-[0_20px_35px_-18px_rgba(0,0,0,0.65)] transition duration-300 hover:-translate-y-1 hover:from-forest-600 hover:to-forest-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-300 focus-visible:ring-offset-2">
+      <span class="pointer-events-none absolute inset-0 rounded-full bg-forest-400/30 opacity-70 animate-pulse"></span>
+      <span class="absolute -right-1 -top-1 rounded-full bg-[#f4cd17] px-1.5 py-0.5 text-[10px] font-black leading-none text-emerald-950 shadow">AI</span>
+      <span class="relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/25 bg-white/15 shadow-inner shadow-black/10">
+        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <rect x="6" y="6" width="12" height="12" rx="5" />
+          <circle cx="10" cy="11" r="1" fill="currentColor" stroke="none" />
+          <circle cx="14" cy="11" r="1" fill="currentColor" stroke="none" />
+          <path d="M9.5 14.2c.7.6 1.5.9 2.5.9s1.8-.3 2.5-.9" stroke-linecap="round" />
+        </svg>
+      </span>
+    </button>
+
+    <section id="dashboardChatbotPanel" class="hidden w-[min(92vw,420px)] overflow-hidden rounded-2xl border border-forest-200 bg-white shadow-[0_24px_55px_-25px_rgba(0,0,0,0.45)]">
+      <header class="flex items-center justify-between border-b border-slate-200 bg-gradient-to-r from-forest-50 to-white px-4 py-3">
+        <div class="flex items-center gap-2.5">
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-forest-200 bg-white text-forest-700 shadow-sm">
+            <svg viewBox="0 0 24 24" fill="none" class="h-4.5 w-4.5" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <rect x="6" y="6" width="12" height="12" rx="5" />
+              <circle cx="10" cy="11" r="1" fill="currentColor" stroke="none" />
+              <circle cx="14" cy="11" r="1" fill="currentColor" stroke="none" />
+              <path d="M9.5 14.2c.7.6 1.5.9 2.5.9s1.8-.3 2.5-.9" stroke-linecap="round" />
+            </svg>
+          </span>
+          <div>
+            <h3 class="text-sm font-extrabold tracking-wide text-forest-800">Dashboard Chatbot</h3>
+            <p class="mt-0.5 inline-flex items-center gap-1 text-xs font-semibold text-forest-600"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>Online</p>
+          </div>
+        </div>
+        <button id="dashboardChatbotMinimize" type="button" class="rounded-lg px-2 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700" aria-label="Minimize chatbot">Hide</button>
+      </header>
+
+      <div id="dashboardChatbotMessages" class="h-80 space-y-3 overflow-y-auto bg-slate-50 px-4 py-4">
+        <div class="max-w-[85%] rounded-2xl rounded-tl-sm bg-forest-700 px-3 py-2 text-sm font-medium leading-6 text-white">Hi Admin. I can help summarize dashboard stats and guide you to key sections.</div>
+      </div>
+
+      <div class="border-t border-slate-200 bg-white px-4 py-3">
+        <div class="mb-3 flex flex-wrap gap-2">
+          <button type="button" data-dashboard-chatbot-prompt="Show me dashboard summary" class="rounded-full border border-forest-200 bg-forest-50 px-3 py-1 text-xs font-bold text-forest-700 transition hover:bg-forest-100">Summary</button>
+          <button type="button" data-dashboard-chatbot-prompt="Which section has reports" class="rounded-full border border-forest-200 bg-forest-50 px-3 py-1 text-xs font-bold text-forest-700 transition hover:bg-forest-100">Reports help</button>
+          <button type="button" data-dashboard-chatbot-prompt="How many pending applications" class="rounded-full border border-forest-200 bg-forest-50 px-3 py-1 text-xs font-bold text-forest-700 transition hover:bg-forest-100">Pending apps</button>
+        </div>
+        <form id="dashboardChatbotForm" class="flex items-center gap-2">
+          <input id="dashboardChatbotInput" type="text" placeholder="Ask about dashboard data..." class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:border-forest-400 focus:ring-2 focus:ring-forest-100" />
+          <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-forest-700 px-3 py-2.5 text-sm font-bold text-white transition hover:bg-forest-600">Send</button>
+        </form>
+      </div>
+    </section>
+  </div>
+
   <script>
     // Prevent browser from restoring old scroll position after refresh/navigation.
     if ("scrollRestoration" in history) {
@@ -453,6 +505,53 @@
     if (window.location.hash) {
       window.history.replaceState({}, "", window.location.pathname);
       window.scrollTo(0, 0);
+    }
+
+    function ensureLogoutConfirmModal() {
+      let modal = document.getElementById("logoutConfirmModal");
+      if (modal) return modal;
+
+      modal = document.createElement("div");
+      modal.id = "logoutConfirmModal";
+      modal.style.cssText = "position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,0.55);z-index:99999;padding:16px;";
+      modal.innerHTML = `
+        <div role="dialog" aria-modal="true" aria-labelledby="logoutConfirmTitle" style="width:100%;max-width:420px;background:#ffffff;border-radius:16px;box-shadow:0 20px 60px rgba(15,23,42,0.28);padding:24px;border:1px solid #d1fae5;">
+          <h3 id="logoutConfirmTitle" style="margin:0 0 8px 0;font-size:1.25rem;font-weight:800;color:#14532d;">Confirm Logout</h3>
+          <p style="margin:0 0 20px 0;color:#334155;line-height:1.5;">Are you sure you wnat to logout from TreeSure</p>
+          <div style="display:flex;justify-content:flex-end;gap:10px;">
+            <button type="button" id="logoutCancelBtn" style="border:1px solid #cbd5e1;background:#ffffff;color:#334155;font-weight:700;padding:10px 14px;border-radius:10px;cursor:pointer;">Cancel</button>
+            <button type="button" id="logoutConfirmBtn" style="border:none;background:#467f3c;color:#ffffff;font-weight:700;padding:10px 14px;border-radius:10px;cursor:pointer;">Logout</button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+
+      const closeModal = () => {
+        modal.style.display = "none";
+      };
+
+      modal.querySelector("#logoutCancelBtn")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeModal();
+      });
+      modal.querySelector("#logoutConfirmBtn")?.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        closeModal();
+        if (typeof window.treeSureLogout === "function") {
+          await window.treeSureLogout();
+          return;
+        }
+        localStorage.clear();
+        window.location.href = "login.html";
+      });
+
+      return modal;
+    }
+
+    function showLogoutConfirmModal() {
+      const modal = ensureLogoutConfirmModal();
+      modal.style.display = "flex";
     }
 
     fetch("sidebar.html")
@@ -475,8 +574,8 @@
         document.querySelectorAll("#sidebar-container #logoutBtn, #mobileSidebarPanel #logoutBtn").forEach(logoutBtn => {
           logoutBtn.addEventListener("click", e => {
             e.preventDefault();
-            localStorage.clear();
-            window.location.href = "login.html";
+            e.stopPropagation();
+            showLogoutConfirmModal();
           });
         });
 

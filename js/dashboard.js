@@ -1,4 +1,4 @@
-import { db, checkLogin, logout } from "./script.js";
+import { db, checkLogin } from "./script.js";
 import {
   collection,
   getDocs,
@@ -42,7 +42,6 @@ const foresterFilter = document.getElementById("foresterFilter");
 const applicantFilter = document.getElementById("applicantFilter");
 
 checkLogin();
-document.getElementById("logoutBtn")?.addEventListener("click", logout);
 
 const usersRef = collection(db, "users");
 const applicationsRef = collection(db, "applications");
@@ -1532,11 +1531,137 @@ function getTimeAgo(date) {
   return date.toLocaleDateString();
 }
 
+// ---------- Dashboard Chatbot ----------
+function getDashboardMetricText() {
+  const totalTrees = totalTaggedEl?.textContent?.trim() || "0";
+  const totalApplications = totalApplicationsEl?.textContent?.trim() || "0";
+  const pendingApplications = pendingApplicationsEl?.textContent?.trim() || "0";
+  const approvedApplications = approvedApplicationsEl?.textContent?.trim() || "0";
+  const activeAppointments = activeAppointmentsEl?.textContent?.trim() || "0";
+  const completedAppointments = completedAppointmentsEl?.textContent?.trim() || "0";
+
+  return `Current overview: ${totalTrees} tagged trees, ${totalApplications} total applications, ${pendingApplications} pending, ${approvedApplications} approved, ${activeAppointments} active appointments, and ${completedAppointments} completed appointments.`;
+}
+
+function setupDashboardChatbot() {
+  const toggleBtn = document.getElementById("dashboardChatbotToggle");
+  const panel = document.getElementById("dashboardChatbotPanel");
+  const minimizeBtn = document.getElementById("dashboardChatbotMinimize");
+  const messagesEl = document.getElementById("dashboardChatbotMessages");
+  const formEl = document.getElementById("dashboardChatbotForm");
+  const inputEl = document.getElementById("dashboardChatbotInput");
+  const promptButtons = document.querySelectorAll("[data-dashboard-chatbot-prompt]");
+
+  if (!toggleBtn || !panel || !messagesEl || !formEl || !inputEl) return;
+
+  const addMessage = (sender, text) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = sender === "user" ? "flex justify-end" : "flex justify-start";
+
+    const bubble = document.createElement("div");
+    bubble.className = sender === "user"
+      ? "max-w-[85%] rounded-2xl rounded-tr-sm bg-forest-100 px-3 py-2 text-sm font-semibold leading-6 text-forest-900"
+      : "max-w-[85%] rounded-2xl rounded-tl-sm bg-forest-700 px-3 py-2 text-sm font-medium leading-6 text-white";
+    bubble.textContent = text;
+
+    wrapper.appendChild(bubble);
+    messagesEl.appendChild(wrapper);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  };
+
+  const openSectionByIntent = (intent) => {
+    const normalized = intent.toLowerCase();
+    if (normalized.includes("report")) {
+      window.location.href = "reports.html";
+      return true;
+    }
+    if (normalized.includes("tree")) {
+      window.location.href = "trees.html";
+      return true;
+    }
+    if (normalized.includes("user") || normalized.includes("forester")) {
+      window.location.href = "users.html";
+      return true;
+    }
+    if (normalized.includes("application")) {
+      window.location.href = "applications.html";
+      return true;
+    }
+    if (normalized.includes("map")) {
+      document.getElementById("mapTitle")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return true;
+    }
+    return false;
+  };
+
+  const getReply = (message) => {
+    const normalized = message.toLowerCase();
+
+    if (normalized.includes("summary") || normalized.includes("overview")) {
+      return getDashboardMetricText();
+    }
+
+    if (normalized.includes("pending")) {
+      const pending = pendingApplicationsEl?.textContent?.trim() || "0";
+      return `There are currently ${pending} pending applications.`;
+    }
+
+    if (normalized.includes("approved")) {
+      const approved = approvedApplicationsEl?.textContent?.trim() || "0";
+      return `There are currently ${approved} approved applications.`;
+    }
+
+    if (normalized.includes("report") || normalized.includes("go to") || normalized.includes("open")) {
+      const navigated = openSectionByIntent(normalized);
+      if (navigated) {
+        return "Opening the requested section now.";
+      }
+    }
+
+    if (normalized.includes("help") || normalized.includes("what can you do")) {
+      return "I can summarize dashboard metrics, answer pending/approved counts, and navigate you to reports, applications, users, trees, or the map section.";
+    }
+
+    return "I can help with dashboard summary, pending/approved counts, and quick navigation. Try: 'Show me dashboard summary'.";
+  };
+
+  const togglePanel = () => {
+    panel.classList.toggle("hidden");
+    if (!panel.classList.contains("hidden")) {
+      inputEl.focus();
+    }
+  };
+
+  toggleBtn.addEventListener("click", togglePanel);
+  minimizeBtn?.addEventListener("click", togglePanel);
+
+  formEl.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const message = inputEl.value.trim();
+    if (!message) return;
+
+    addMessage("user", message);
+    inputEl.value = "";
+
+    setTimeout(() => {
+      addMessage("bot", getReply(message));
+    }, 350);
+  });
+
+  promptButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      inputEl.value = btn.getAttribute("data-dashboard-chatbot-prompt") || "";
+      formEl.requestSubmit();
+    });
+  });
+}
+
 
 // ---------- Initialize ----------
 document.addEventListener("DOMContentLoaded", async () => {
   initMap();
   await loadData();
+  setupDashboardChatbot();
   
   // Add refresh button handler if it exists
   const refreshBtn = document.getElementById("refreshDashboard");

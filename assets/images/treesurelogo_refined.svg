@@ -1,0 +1,41 @@
+<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Transparent background (no fill) -->
+  <defs>
+    <style>
+      .badge-fill { fill: #5DC75D; }
+      .leaf-color { fill: white; }
+      .shadow { fill: #4CAF50; }
+    </style>
+  </defs>
+  
+  <!-- Main badge shape with rounded corners -->
+  <path d="M 40 20 L 160 20 Q 175 20 175 35 L 175 180 Q 175 195 160 200 L 40 200 Q 25 195 25 180 L 25 35 Q 25 20 40 20 Z" class="badge-fill"/>
+  
+  <!-- Bottom shadow/depth -->
+  <path d="M 40 200 L 160 200 Q 175 195 175 180 L 175 200 L 40 200 Z" class="shadow" opacity="0.3"/>
+  
+  <!-- Top circle accent -->
+  <circle cx="100" cy="35" r="18" fill="white" opacity="0.6"/>
+  
+  <!-- Center leaf icon -->
+  <g transform="translate(100, 110)">
+    <!-- Left leaf -->
+    <ellipse cx="-14" cy="-8" rx="10" ry="18" fill="white" transform="rotate(-35 -14 -8)"/>
+    
+    <!-- Right leaf -->
+    <ellipse cx="14" cy="-8" rx="10" ry="18" fill="white" transform="rotate(35 14 -8)"/>
+    
+    <!-- Bottom center leaf -->
+    <ellipse cx="0" cy="15" rx="8" ry="16" fill="white" transform="rotate(0 0 15)"/>
+  </g>
+  
+  <!-- Subtle grid pattern overlay (optional, can be removed) -->
+  <g opacity="0.08" stroke="white" stroke-width="1">
+    <line x1="50" y1="30" x2="50" y2="180"/>
+    <line x1="70" y1="30" x2="70" y2="180"/>
+    <line x1="90" y1="30" x2="90" y2="180"/>
+    <line x1="110" y1="30" x2="110" y2="180"/>
+    <line x1="130" y1="30" x2="130" y2="180"/>
+    <line x1="150" y1="30" x2="150" y2="180"/>
+  </g>
+</svg>

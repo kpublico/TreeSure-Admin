@@ -107,26 +107,41 @@
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 12px;
       background: rgba(2, 6, 23, 0.55);
-      z-index: 130;
+      z-index: 2100;
     }
 
     .modal-content {
       position: relative;
-      width: 100%;
-      border-radius: 16px;
-      border: 1px solid #d1fae5;
+      width: min(980px, calc(100vw - 24px));
+      max-height: calc(100vh - 24px);
+      overflow-y: auto;
+      border-radius: 18px;
+      border: 1px solid #dbe7d8;
       background: #fff;
       box-shadow: 0 24px 70px -30px rgba(15, 23, 42, 0.45);
-      padding: 20px;
+      padding: 0;
+    }
+
+    .modal-content::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .modal-content::-webkit-scrollbar-thumb {
+      background: rgba(70, 127, 60, 0.45);
+      border-radius: 999px;
+    }
+
+    .modal-content::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.04);
     }
 
     .close {
       position: absolute;
-      top: 12px;
-      right: 14px;
-      font-size: 28px;
+      top: 16px;
+      right: 18px;
+      font-size: 34px;
       line-height: 1;
       cursor: pointer;
       color: #64748b;
@@ -163,8 +178,10 @@
     <div class="reports-content flex min-w-0 flex-1 flex-col">
       <header class="sticky top-0 z-30 border-b border-emerald-100 bg-forest-700 text-white shadow-sm">
         <div class="px-4 py-5 sm:px-6 lg:px-8">
-          <h1 class="flex items-center gap-2 text-4xl font-black tracking-tight">
-            <span>📋</span>
+          <h1 class="flex items-center gap-3 text-4xl font-black tracking-tight">
+            <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 text-emerald-50 ring-1 ring-white/20">
+              <i class="fa-solid fa-chart-pie text-lg"></i>
+            </span>
             <span>Reports Dashboard</span>
           </h1>
           <p class="mt-1 text-sm text-emerald-100">Comprehensive analytics and system summaries</p>
@@ -173,7 +190,12 @@
 
       <main class="w-full flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
         <section class="space-y-4">
-          <h3 class="text-3xl font-black text-slate-800">📤 Export Options</h3>
+          <h3 class="flex items-center gap-2 text-3xl font-black text-slate-800">
+            <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-forest-100 text-forest-700">
+              <i class="fa-solid fa-file-export"></i>
+            </span>
+            Export Options
+          </h3>
           <div class="export-buttons flex flex-wrap gap-3">
             <button id="exportPDF" class="inline-flex items-center gap-2 rounded-xl bg-forest-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-forest-800"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
             <button id="exportExcel" class="inline-flex items-center gap-2 rounded-xl bg-forest-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-forest-800"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
@@ -184,17 +206,21 @@
         </section>
 
         <section class="tabs flex flex-wrap gap-3">
-          <button class="tab active" data-tab="trees">🌳 Trees</button>
-          <button class="tab" data-tab="ctpo">🪪 CTPO</button>
-          <button class="tab" data-tab="pltp">🪵 PLTP</button>
-          <button class="tab" data-tab="splt">🪵 SPLTP</button>
-          <button class="tab" data-tab="ptc">📋 Permit to Cut</button>
-          <button class="tab" data-tab="chainsaw">🪚 Chainsaw Permit</button>
-          <button class="tab" data-tab="cov">📜 COV</button>
+          <button class="tab active" data-tab="trees"><i class="fa-solid fa-tree"></i> Trees</button>
+          <button class="tab" data-tab="ctpo"><i class="fa-solid fa-id-card"></i> CTPO</button>
+          <button class="tab" data-tab="pltp"><i class="fa-solid fa-seedling"></i> PLTP</button>
+          <button class="tab" data-tab="splt"><i class="fa-solid fa-seedling"></i> SPLTP</button>
+          <button class="tab" data-tab="chainsaw"><i class="fa-solid fa-screwdriver-wrench"></i> Chainsaw Permit</button>
+          <button class="tab" data-tab="cov"><i class="fa-solid fa-file-signature"></i> COV</button>
         </section>
 
         <section class="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm filters">
-          <h3 class="text-3xl font-black text-slate-800">📍 Filters &amp; Search</h3>
+          <h3 class="flex items-center gap-2 text-3xl font-black text-slate-800">
+            <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-forest-100 text-forest-700">
+              <i class="fa-solid fa-filter"></i>
+            </span>
+            Filters &amp; Search
+          </h3>
 
           <div class="filter-row grid gap-3 lg:grid-cols-5">
             <input type="text" id="keywordSearch" placeholder="Search keyword..." class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100" />
@@ -218,18 +244,23 @@
 
           <div class="date-range-filter grid gap-3 md:grid-cols-2">
             <div>
-              <label for="startDate" class="mb-1 block text-sm font-bold text-emerald-900">📅 From:</label>
+              <label for="startDate" class="mb-1 flex items-center gap-2 text-sm font-bold text-emerald-900"><i class="fa-regular fa-calendar"></i> From:</label>
               <input type="date" id="startDate" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100" />
             </div>
             <div>
-              <label for="endDate" class="mb-1 block text-sm font-bold text-emerald-900">📅 To:</label>
+              <label for="endDate" class="mb-1 flex items-center gap-2 text-sm font-bold text-emerald-900"><i class="fa-regular fa-calendar"></i> To:</label>
               <input type="date" id="endDate" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100" />
             </div>
           </div>
         </section>
 
         <section class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm data-table" id="tableSection">
-          <h3 class="text-3xl font-black text-slate-800">📋 Detailed Data</h3>
+          <h3 class="flex items-center gap-2 text-3xl font-black text-slate-800">
+            <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-forest-100 text-forest-700">
+              <i class="fa-solid fa-table-list"></i>
+            </span>
+            Detailed Data
+          </h3>
 
           <div id="loadingIndicator" class="hidden rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
             <i class="fa-solid fa-spinner fa-spin"></i> Loading reports...
@@ -277,17 +308,55 @@
           </div>
         </section>
 
-        <section class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm charts" id="chartsSection">
-          <h3 class="text-3xl font-black text-slate-800">📊 Visual Analytics</h3>
-          <div class="charts-grid grid gap-4 lg:grid-cols-2">
-            <div class="chart-box rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <h3 class="mb-3 text-lg font-bold text-emerald-900">📊 Application Status Distribution</h3>
-              <canvas id="statusChart" height="220"></canvas>
+        <section class="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm charts" id="chartsSection">
+          <div class="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h3 class="flex items-center gap-2 text-3xl font-black text-slate-800">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-forest-100 text-forest-700">
+                  <i class="fa-solid fa-chart-line"></i>
+                </span>
+                Visual Analytics
+              </h3>
+              <p class="mt-1 text-sm font-medium text-slate-500">Organized charts for quick comparison and trend checks.</p>
             </div>
-            <div class="chart-box rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <h3 class="mb-3 text-lg font-bold text-emerald-900">🌿 Tree Species Distribution</h3>
-              <canvas id="speciesChart" height="220"></canvas>
-            </div>
+            <span class="inline-flex items-center rounded-full border border-forest-200 bg-forest-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-forest-700">Live Summary</span>
+          </div>
+
+          <div class="charts-grid grid gap-5 lg:grid-cols-2">
+            <article class="chart-box rounded-2xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
+              <h4 class="mb-4 text-base font-extrabold text-forest-800">Application Status Distribution</h4>
+              <div class="h-[280px] rounded-xl border border-slate-200 bg-white p-3">
+                <canvas id="statusChart"></canvas>
+              </div>
+            </article>
+
+            <article class="chart-box rounded-2xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
+              <h4 class="mb-4 text-base font-extrabold text-forest-800">Tree Species Distribution</h4>
+              <div class="h-[280px] rounded-xl border border-slate-200 bg-white p-3">
+                <canvas id="speciesChart"></canvas>
+              </div>
+            </article>
+
+            <article class="chart-box rounded-2xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
+              <h4 class="mb-4 text-base font-extrabold text-forest-800">Records Over Time</h4>
+              <div class="h-[280px] rounded-xl border border-slate-200 bg-white p-3">
+                <canvas id="submissionsTrendChart"></canvas>
+              </div>
+            </article>
+
+            <article class="chart-box rounded-2xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
+              <h4 class="mb-4 text-base font-extrabold text-forest-800">Activity Trend</h4>
+              <div class="h-[280px] rounded-xl border border-slate-200 bg-white p-3">
+                <canvas id="activityTrendChart"></canvas>
+              </div>
+            </article>
+
+            <article class="chart-box rounded-2xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md lg:col-span-2">
+              <h4 class="mb-4 text-base font-extrabold text-forest-800">Top Contributors</h4>
+              <div class="h-[300px] rounded-xl border border-slate-200 bg-white p-3">
+                <canvas id="topContributorsChart"></canvas>
+              </div>
+            </article>
           </div>
         </section>
 
@@ -303,16 +372,74 @@
   <aside id="mobileSidebarPanel" class="fixed inset-y-0 left-0 z-50 hidden w-72 overflow-y-auto bg-white shadow-2xl lg:hidden"></aside>
 
   <div id="applicationDetailsModal" class="modal" style="display:none;">
-    <div class="modal-content" style="max-width: 800px; max-height: 80vh; overflow-y: auto;">
+    <div class="modal-content">
       <span class="close" id="closeDetailsModal">&times;</span>
-      <h2 class="mb-3 text-2xl font-black text-emerald-900">Application Details</h2>
-      <div id="applicationDetailsContent"></div>
+      <h2 class="sticky top-0 z-10 border-b border-slate-200 bg-white px-6 py-4 text-2xl font-black text-forest-900">Application Details</h2>
+      <div id="applicationDetailsContent" class="p-6"></div>
     </div>
   </div>
 
   <script type="module" src="./js/reports.js"></script>
 
   <script>
+    function ensureLogoutConfirmModal() {
+      let modal = document.getElementById("logoutConfirmModal");
+      if (modal) return modal;
+
+      modal = document.createElement("div");
+      modal.id = "logoutConfirmModal";
+      modal.style.cssText = "position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,0.55);z-index:99999;padding:16px;";
+      modal.innerHTML = `
+        <div role="dialog" aria-modal="true" aria-labelledby="logoutConfirmTitle" style="width:100%;max-width:420px;background:#ffffff;border-radius:16px;box-shadow:0 20px 60px rgba(15,23,42,0.28);padding:24px;border:1px solid #d1fae5;">
+          <h3 id="logoutConfirmTitle" style="margin:0 0 8px 0;font-size:1.25rem;font-weight:800;color:#14532d;">Confirm Logout</h3>
+          <p style="margin:0 0 20px 0;color:#334155;line-height:1.5;">Are you sure you wnat to logout from TreeSure</p>
+          <div style="display:flex;justify-content:flex-end;gap:10px;">
+            <button type="button" id="logoutCancelBtn" style="border:1px solid #cbd5e1;background:#ffffff;color:#334155;font-weight:700;padding:10px 14px;border-radius:10px;cursor:pointer;">Cancel</button>
+            <button type="button" id="logoutConfirmBtn" style="border:none;background:#467f3c;color:#ffffff;font-weight:700;padding:10px 14px;border-radius:10px;cursor:pointer;">Logout</button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+
+      const closeModal = () => {
+        modal.style.display = "none";
+      };
+
+      const dialog = modal.firstElementChild;
+      dialog?.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+
+      modal.querySelector("#logoutCancelBtn")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeModal();
+      });
+      modal.querySelector("#logoutConfirmBtn")?.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        closeModal();
+        if (typeof window.treeSureLogout === "function") {
+          await window.treeSureLogout();
+          return;
+        }
+        localStorage.clear();
+        window.location.href = "login.html";
+      });
+
+      return modal;
+    }
+
+    function showLogoutConfirmModal() {
+      const modal = ensureLogoutConfirmModal();
+      modal.style.display = "flex";
+    }
+
     fetch("sidebar.html")
       .then(res => res.text())
       .then(html => {
@@ -335,8 +462,8 @@
         document.querySelectorAll("#sidebar-container #logoutBtn, #mobileSidebarPanel #logoutBtn").forEach(logoutBtn => {
           logoutBtn.addEventListener("click", e => {
             e.preventDefault();
-            localStorage.clear();
-            window.location.href = "login.html";
+            e.stopPropagation();
+            showLogoutConfirmModal();
           });
         });
 
@@ -375,7 +502,6 @@
           { id: "ctpoBtn", type: "ctpo", title: "CTPO Applications" },
           { id: "pltpBtn", type: "pltp", title: "PLTP Applications" },
           { id: "spltpBtn", type: "spltp", title: "SPLTP Applications" },
-          { id: "permitCutBtn", type: "ptc", title: "Permit to Cut Applications" },
           { id: "cttBtn", type: "ctt", title: "Transport Permit (CTT)" },
           { id: "chainsawBtn", type: "chainsaw", title: "Chainsaw Registration" },
         ];

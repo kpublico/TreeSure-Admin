@@ -178,13 +178,30 @@ function attachEventListeners() {
         currentApplicantData?.name ||
         "Selected applicant";
 
+      // Reset modal to form view
       inventoryModal.style.display = "flex";
       inventoryFormStep.style.display = "block";
       inventoryReviewStep.style.display = "none";
 
+      // **IMPORTANT**: Reset ALL field visibility first (regardless of previous state)
+      appointmentType.style.display = "block";
+      appointmentLocation.style.display = "block";
+      appointmentRemarks.style.display = "block";
+      appointmentType.disabled = false;
+      appointmentLocation.disabled = false;
+      appointmentRemarks.disabled = false;
+      if (foresterCheckboxList) foresterCheckboxList.style.display = "block";
+      
+      // Show all labels
+      const allLabels = inventoryFormStep.querySelectorAll('label');
+      allLabels.forEach(label => {
+        label.style.display = "block";
+      });
+
       const loadForestersPromise = loadForesters();
       if (reviewAppointmentBtn) {
         reviewAppointmentBtn.disabled = true;
+        reviewAppointmentBtn.style.display = "block";
         loadForestersPromise.finally(() => {
           reviewAppointmentBtn.disabled = false;
         });
@@ -222,11 +239,22 @@ function attachEventListeners() {
         }
         
         // Hide appointment type field, show location and remarks
-        setFieldVisibility(appointmentType, false);
-        setFieldVisibility(appointmentLocation, true);
-        setFieldVisibility(appointmentRemarks, true);
+        appointmentType.style.display = "none";
+        appointmentLocation.style.display = "block";
+        appointmentRemarks.style.display = "block";
         appointmentLocation.disabled = false;
         appointmentRemarks.disabled = false;
+        if (foresterCheckboxList) foresterCheckboxList.style.display = "block";
+        
+        // Hide type label, show location and remarks labels
+        const allLabels = inventoryFormStep.querySelectorAll('label');
+        allLabels.forEach(label => {
+          if (label.textContent.includes('Type')) {
+            label.style.display = "none";
+          } else {
+            label.style.display = "block";
+          }
+        });
         
       } else if (currentAppointmentMode === 'revisit') {
         // Revisit appointment
@@ -244,14 +272,25 @@ function attachEventListeners() {
         }
         
         // Hide appointment type field, show location and remarks
-        setFieldVisibility(appointmentType, false);
-        setFieldVisibility(appointmentLocation, true);
-        setFieldVisibility(appointmentRemarks, true);
+        appointmentType.style.display = "none";
+        appointmentLocation.style.display = "block";
+        appointmentRemarks.style.display = "block";
         appointmentLocation.disabled = false;
         appointmentRemarks.disabled = false;
+        if (foresterCheckboxList) foresterCheckboxList.style.display = "block";
+        
+        // Hide type label, show location and remarks labels
+        const allLabels2 = inventoryFormStep.querySelectorAll('label');
+        allLabels2.forEach(label => {
+          if (label.textContent.includes('Type')) {
+            label.style.display = "none";
+          } else {
+            label.style.display = "block";
+          }
+        });
         
       } else if (currentAppointmentMode === 'modify') {
-        // Modify existing appointment - only change foresters
+        // Modify existing appointment details and forester assignment
         modalTitle.textContent = '✏️ Modify Forester Assignment';
 
         await loadForestersPromise;
@@ -277,13 +316,27 @@ function attachEventListeners() {
           });
         }
         
-        // Hide all fields except forester selection
+        // Keep details visible in modify mode so the modal layout remains stable
+        // and admins can adjust assignment details.
         appointmentType.disabled = true;
-        appointmentLocation.disabled = true;
-        appointmentRemarks.disabled = true;
-        setFieldVisibility(appointmentType, false);
-        setFieldVisibility(appointmentLocation, false);
-        setFieldVisibility(appointmentRemarks, false);
+        appointmentLocation.disabled = false;
+        appointmentRemarks.disabled = false;
+        appointmentType.style.display = "none";
+        appointmentLocation.style.display = "block";
+        appointmentRemarks.style.display = "block";
+        
+        // Hide the labels for hidden fields
+        const allLabels = inventoryFormStep.querySelectorAll('label');
+        allLabels.forEach(label => {
+          if (label.textContent.includes('Type')) {
+            label.style.display = "none";
+          } else {
+            label.style.display = "block";
+          }
+        });
+        
+        // Ensure forester list and review button are visible
+        if (foresterCheckboxList) foresterCheckboxList.style.display = "block";
       } else {
         await loadForestersPromise;
       }
@@ -308,13 +361,10 @@ function attachEventListeners() {
       if (selectedForesters.length === 0)
         return alert("⚠️ Please select at least one forester.");
       
-      // For modify mode, only validate foresters
-      // For new/revisit mode, validate location (type is already set)
-      if (currentAppointmentMode !== 'modify') {
-        if (!appointmentLocation.value.trim()) {
-          alert("⚠️ Please enter a location.");
-          return;
-        }
+      // Validate location for all modes (modify mode is prefilled but still editable).
+      if (!appointmentLocation.value.trim()) {
+        alert("⚠️ Please enter a location.");
+        return;
       }
 
       // Populate review details

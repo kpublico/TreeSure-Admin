@@ -70,14 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ✅ Attach logout listener (only if button exists)
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      await logout();
-    });
-  }
 });
 // ------------------ CHECK LOGIN ------------------
 export function checkLogin() {
@@ -106,5 +98,7 @@ export async function logout() {
     alert("Error logging out: " + error.message);
   }
 }
+
+window.treeSureLogout = logout;
 
 

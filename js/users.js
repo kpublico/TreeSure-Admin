@@ -1,4 +1,4 @@
-import { db, checkLogin, logout } from "./script.js";
+import { db, checkLogin } from "./script.js";
 import { 
   collection, 
   getDocs, 
@@ -69,15 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const editAddressInput = document.getElementById("editAddress");
   const editRoleSelect = document.getElementById("editRole");
   const editStatusSelect = document.getElementById("editStatus");
-
-  // ---------------- LOGOUT ----------------
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      logout();
-    });
-  }
 
   // ---------------- CONFIRMATION TOAST ----------------
 // Confirmation toast that supports configurable buttons
@@ -207,23 +198,30 @@ function showSuccessToast(message) {
       // Render users
       usersData.forEach((user) => {
         const row = document.createElement("tr");
-        row.className = "transition hover:bg-emerald-50/40";
+        row.className = "transition hover:bg-forest-50/40";
+
+        const roleLabel = (user.role || "N/A").toLowerCase();
+        const roleBadge = roleLabel === "admin"
+          ? '<span class="inline-flex items-center rounded-full bg-violet-100 px-2.5 py-1 text-xs font-bold text-violet-800">Admin</span>'
+          : roleLabel === "forester"
+          ? '<span class="inline-flex items-center rounded-full bg-sky-100 px-2.5 py-1 text-xs font-bold text-sky-800">Forester</span>'
+          : '<span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">Applicant</span>';
 
         const statusBadge = user.active
           ? '<span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800"><i class="fa-solid fa-circle-check"></i> Active</span>'
           : '<span class="inline-flex items-center gap-1 rounded-full bg-rose-100 px-3 py-1 text-xs font-bold text-rose-800"><i class="fa-solid fa-circle-xmark"></i> Inactive</span>';
 
         row.innerHTML = `
-          <td class="px-4 py-3 font-semibold text-slate-700">${user.id}</td>
-          <td class="px-4 py-3">${user.name || "N/A"}</td>
-          <td class="px-4 py-3">${user.username || "N/A"}</td>
-          <td class="px-4 py-3">••••••</td>
-          <td class="px-4 py-3">${user.contact || "N/A"}</td>
-          <td class="px-4 py-3">${user.address || "N/A"}</td>
-          <td class="px-4 py-3">${user.role || "N/A"}</td>
-          <td class="px-4 py-3">${statusBadge}</td>
-          <td class="px-4 py-3 text-center">
-            <button data-id="${user.id}" class="edit-btn inline-flex items-center gap-2 rounded-lg bg-forest-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-forest-600">
+          <td class="whitespace-nowrap px-4 py-3.5 font-semibold text-slate-700">${user.id}</td>
+          <td class="whitespace-nowrap px-4 py-3.5 font-semibold text-slate-800">${user.name || "N/A"}</td>
+          <td class="whitespace-nowrap px-4 py-3.5 text-slate-700">${user.username || "N/A"}</td>
+          <td class="whitespace-nowrap px-4 py-3.5 tracking-widest text-slate-500">••••••</td>
+          <td class="whitespace-nowrap px-4 py-3.5 text-slate-700">${user.contact || "N/A"}</td>
+          <td class="max-w-[260px] truncate px-4 py-3.5 text-slate-700" title="${user.address || "N/A"}">${user.address || "N/A"}</td>
+          <td class="whitespace-nowrap px-4 py-3.5">${roleBadge}</td>
+          <td class="whitespace-nowrap px-4 py-3.5">${statusBadge}</td>
+          <td class="whitespace-nowrap px-4 py-3.5 text-center">
+            <button data-id="${user.id}" class="edit-btn inline-flex items-center gap-2 rounded-xl bg-forest-700 px-4 py-2 text-xs font-extrabold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-forest-600">
               <i class="fas fa-edit"></i> Edit
             </button>
           </td>

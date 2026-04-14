@@ -40,73 +40,102 @@
     };
   </script>
 </head>
-<body class="min-h-screen bg-[#d6e4d5] font-sans text-slate-900 antialiased">
-  <header class="sticky top-0 z-50 border-b border-emerald-100 bg-white/95 backdrop-blur">
+<body class="min-h-screen bg-gradient-to-b from-forest-100 to-[#d6e4d5] font-sans text-slate-900 antialiased">
+  <header class="sticky top-0 z-50 border-b border-forest-200/80 bg-gradient-to-r from-forest-50/95 to-forest-100/95 shadow-sm backdrop-blur-xl">
     <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8" aria-label="Primary">
-      <a href="index.html" class="inline-flex items-center gap-2">
-        <img src="assets/images/treesurelogo.png" alt="TreeSure logo" class="h-10 w-10 rounded-xl border border-emerald-200 bg-emerald-50 p-1" />
-        <span class="text-xl font-extrabold tracking-tight text-emerald-800">TreeSure</span>
+      <a href="index.html" class="inline-flex items-center gap-3">
+        <img src="assets/images/treesurelogo.png" alt="TreeSure logo" class="h-12 w-auto object-contain" />
+        <span class="text-2xl font-extrabold tracking-tight text-forest-900">TreeSure</span>
       </a>
-      <ul class="hidden items-center gap-8 text-sm font-semibold text-emerald-900 md:flex">
-        <li><a href="#home" class="transition hover:text-emerald-700">Home</a></li>
-        <li><a href="#features" class="transition hover:text-emerald-700">Features</a></li>
-        <li><a href="#services" class="transition hover:text-emerald-700">Services</a></li>
-        <li><a href="#resources" class="transition hover:text-emerald-700">Contact</a></li>
+      <ul class="hidden items-center gap-2 text-sm font-bold text-forest-900 md:flex">
+        <li><a href="#home" class="rounded-lg px-3 py-1.5 transition hover:bg-forest-200/60 hover:text-forest-700">Home</a></li>
+        <li><a href="#features" class="rounded-lg px-3 py-1.5 transition hover:bg-forest-200/60 hover:text-forest-700">Features</a></li>
+        <li><a href="#services" class="rounded-lg px-3 py-1.5 transition hover:bg-forest-200/60 hover:text-forest-700">Services</a></li>
+        <li><a href="#resources" class="rounded-lg px-3 py-1.5 transition hover:bg-forest-200/60 hover:text-forest-700">Contact</a></li>
       </ul>
-      <p id="liveDateTime" class="hidden text-xs font-semibold text-emerald-700 sm:block"></p>
+      <p id="liveDateTime" class="hidden rounded-full border border-forest-200 bg-forest-50 px-4 py-1.5 text-xs font-bold text-forest-700 sm:block"></p>
     </nav>
   </header>
 
-  <main id="home">
-    <section class="relative overflow-hidden bg-[#0f5f2f]">
-      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.12),transparent_45%)]" aria-hidden="true"></div>
-      <div class="mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-24">
-        <div class="relative z-10 space-y-7 text-white">
-          <h1 class="max-w-md text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl">Welcome to TreeSure</h1>
-          <p class="max-w-sm text-2xl font-semibold text-emerald-100">Sustainable Eco-Management</p>
+  <main id="home" class="bg-white">
+    <section class="relative overflow-hidden bg-gradient-to-br from-forest-900 via-[#0f5f2f] to-forest-700">
+      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_45%)]" aria-hidden="true"></div>
+      <div class="pointer-events-none absolute -left-16 top-16 h-48 w-48 rounded-full bg-emerald-200/10 blur-3xl" aria-hidden="true"></div>
+      <div class="mx-auto grid max-w-6xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-8">
+        <div class="relative z-10 space-y-5 text-white lg:pt-2">
+          <p class="inline-flex items-center rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-emerald-100">Environmental Services Platform</p>
+          <h1 class="max-w-xl text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl">Welcome to TreeSure</h1>
+          <p class="max-w-lg text-xl font-semibold text-emerald-100">Sustainable Eco-Management</p>
+          <p class="max-w-xl text-sm font-medium leading-7 text-emerald-100/90">A professional digital portal for streamlined applications, transparent approvals, and data-driven environmental governance.</p>
           <div class="flex flex-wrap gap-3">
-            <a href="signup.html" class="inline-flex items-center justify-center rounded-xl bg-[#f4cd17] px-7 py-3 text-sm font-bold text-emerald-950 shadow-lg transition hover:brightness-95">Create Account</a>
-            <a href="login.html" class="inline-flex items-center justify-center rounded-xl bg-white px-7 py-3 text-sm font-bold text-emerald-900 shadow-lg transition hover:bg-emerald-50">Log In</a>
+            <a href="login.html" class="group inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white px-7 py-3 text-sm font-extrabold tracking-wide text-emerald-900 shadow-[0_14px_30px_-16px_rgba(0,0,0,0.55)] transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-900">
+              Log In
+              <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+            </a>
           </div>
-          <dl class="grid max-w-md grid-cols-3 gap-3 pt-2">
-            <div class="rounded-xl border border-white/40 bg-white/15 px-3 py-3 text-center backdrop-blur-sm">
-              <dt class="text-xs font-semibold text-emerald-100">Trees</dt>
-              <dd class="text-lg font-extrabold">0</dd>
+          <dl class="grid max-w-xl grid-cols-1 gap-3 pt-1 sm:grid-cols-3">
+            <div class="rounded-2xl border border-white/35 bg-white/10 px-4 py-4 text-center shadow-[0_14px_30px_-18px_rgba(0,0,0,0.7)] backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:bg-white/15">
+              <dt class="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-100/90">Trees</dt>
+              <dd class="mt-2 text-3xl font-extrabold leading-none text-white">0</dd>
+              <p class="mt-1 text-[11px] font-semibold text-emerald-100/80">Inventory</p>
             </div>
-            <div class="rounded-xl border border-white/40 bg-white/15 px-3 py-3 text-center backdrop-blur-sm">
-              <dt class="text-xs font-semibold text-emerald-100">Users</dt>
-              <dd class="text-lg font-extrabold">12</dd>
+            <div class="rounded-2xl border border-white/35 bg-white/10 px-4 py-4 text-center shadow-[0_14px_30px_-18px_rgba(0,0,0,0.7)] backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:bg-white/15">
+              <dt class="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-100/90">Users</dt>
+              <dd class="mt-2 text-3xl font-extrabold leading-none text-white">12</dd>
+              <p class="mt-1 text-[11px] font-semibold text-emerald-100/80">Registered</p>
             </div>
-            <div class="rounded-xl border border-white/40 bg-white/15 px-3 py-3 text-center backdrop-blur-sm">
-              <dt class="text-xs font-semibold text-emerald-100">Locations</dt>
-              <dd class="text-lg font-extrabold">0</dd>
+            <div class="rounded-2xl border border-white/35 bg-white/10 px-4 py-4 text-center shadow-[0_14px_30px_-18px_rgba(0,0,0,0.7)] backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:bg-white/15">
+              <dt class="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-100/90">Locations</dt>
+              <dd class="mt-2 text-3xl font-extrabold leading-none text-white">0</dd>
+              <p class="mt-1 text-[11px] font-semibold text-emerald-100/80">Active</p>
             </div>
           </dl>
+        </div>
+        <div class="relative z-10 hidden items-end lg:flex">
+          <div class="w-full rounded-3xl border border-white/25 bg-white/10 p-6 text-white shadow-soft backdrop-blur-md">
+            <h2 class="text-lg font-extrabold tracking-tight">Operations Snapshot</h2>
+            <p class="mt-1 text-sm font-medium text-emerald-100/90">Live status of key services.</p>
+            <p id="opsUpdatedAt" class="mt-1 text-xs font-semibold text-emerald-100/80">Updated: --</p>
+            <div class="mt-4 space-y-3">
+              <div>
+                <div class="mb-1.5 flex items-center justify-between text-xs font-bold uppercase tracking-[0.14em] text-emerald-100"><span>Permit Processing</span><span id="permitValue">84%</span></div>
+                <div class="h-2 rounded-full bg-white/20"><div id="permitBar" class="h-2 w-[84%] rounded-full bg-[#f4cd17] transition-all duration-700 ease-out"></div></div>
+              </div>
+              <div>
+                <div class="mb-1.5 flex items-center justify-between text-xs font-bold uppercase tracking-[0.14em] text-emerald-100"><span>Field Updates</span><span id="fieldValue">63%</span></div>
+                <div class="h-2 rounded-full bg-white/20"><div id="fieldBar" class="h-2 w-[63%] rounded-full bg-emerald-200 transition-all duration-700 ease-out"></div></div>
+              </div>
+              <div>
+                <div class="mb-1.5 flex items-center justify-between text-xs font-bold uppercase tracking-[0.14em] text-emerald-100"><span>Report Compliance</span><span id="reportValue">92%</span></div>
+                <div class="h-2 rounded-full bg-white/20"><div id="reportBar" class="h-2 w-[92%] rounded-full bg-emerald-50 transition-all duration-700 ease-out"></div></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <section id="features" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
       <div class="text-center">
-        <h2 class="text-4xl font-extrabold tracking-tight text-emerald-700">What is TreeSure?</h2>
+        <h2 class="text-4xl font-extrabold tracking-tight text-forest-700">What is TreeSure?</h2>
         <p class="mt-3 text-base font-medium text-slate-600">Streamline your eco-management with our comprehensive tools</p>
       </div>
       <div class="mt-10 grid gap-6 md:grid-cols-3">
-        <article class="rounded-2xl bg-white p-7 shadow-md ring-1 ring-emerald-100">
+        <article class="rounded-2xl bg-white p-7 shadow-md ring-1 ring-emerald-100 transition duration-300 hover:-translate-y-1 hover:shadow-soft">
           <div class="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
             <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
           </div>
           <h3 class="text-2xl font-extrabold text-emerald-800">Real-Time Tracking</h3>
           <p class="mt-3 text-sm font-medium leading-6 text-slate-600">Monitor tree inventory and environmental data in real-time.</p>
         </article>
-        <article class="rounded-2xl bg-white p-7 shadow-md ring-1 ring-emerald-100">
+        <article class="rounded-2xl bg-white p-7 shadow-md ring-1 ring-emerald-100 transition duration-300 hover:-translate-y-1 hover:shadow-soft">
           <div class="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
             <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h7l-1 8 10-12h-7z"/></svg>
           </div>
           <h3 class="text-2xl font-extrabold text-emerald-800">Sustainable Practices</h3>
           <p class="mt-3 text-sm font-medium leading-6 text-slate-600">Implement eco-friendly strategies and best practices.</p>
         </article>
-        <article class="rounded-2xl bg-white p-7 shadow-md ring-1 ring-emerald-100">
+        <article class="rounded-2xl bg-white p-7 shadow-md ring-1 ring-emerald-100 transition duration-300 hover:-translate-y-1 hover:shadow-soft">
           <div class="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
             <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><path d="M5 12h3v7H5zM10.5 6h3v13h-3zM16 9h3v10h-3z"/></svg>
           </div>
@@ -118,24 +147,91 @@
 
     <section id="services" class="mx-auto max-w-6xl px-4 pb-16 sm:px-6 lg:px-8 lg:pb-20">
       <div class="text-center">
-        <h2 class="text-4xl font-extrabold tracking-tight text-emerald-700">Available Services</h2>
+        <h2 class="text-4xl font-extrabold tracking-tight text-forest-700">Available Services</h2>
         <p class="mt-3 text-base font-medium text-slate-600">Comprehensive solutions for sustainable management</p>
       </div>
       <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <article class="rounded-2xl bg-white p-8 text-center shadow-md ring-1 ring-emerald-100"><h3 class="text-2xl font-extrabold text-emerald-800">Eco-Profiles</h3><p class="mt-2 text-sm font-medium text-slate-600">Create and manage environmental profiles.</p></article>
-        <article class="rounded-2xl bg-white p-8 text-center shadow-md ring-1 ring-emerald-100"><h3 class="text-2xl font-extrabold text-emerald-800">Project Permits</h3><p class="mt-2 text-sm font-medium text-slate-600">Manage permits and approvals efficiently.</p></article>
-        <article class="rounded-2xl bg-white p-8 text-center shadow-md ring-1 ring-emerald-100"><h3 class="text-2xl font-extrabold text-emerald-800">Community Grove</h3><p class="mt-2 text-sm font-medium text-slate-600">Connect with environmental communities.</p></article>
-        <article class="rounded-2xl bg-white p-8 text-center shadow-md ring-1 ring-emerald-100"><h3 class="text-2xl font-extrabold text-emerald-800">Health Check</h3><p class="mt-2 text-sm font-medium text-slate-600">Monitor forest and tree health status.</p></article>
-        <article class="rounded-2xl bg-white p-8 text-center shadow-md ring-1 ring-emerald-100"><h3 class="text-2xl font-extrabold text-emerald-800">Certificates</h3><p class="mt-2 text-sm font-medium text-slate-600">Obtain environmental certifications.</p></article>
-        <article class="rounded-2xl bg-white p-8 text-center shadow-md ring-1 ring-emerald-100"><h3 class="text-2xl font-extrabold text-emerald-800">Tree Events</h3><p class="mt-2 text-sm font-medium text-slate-600">Organize environmental events.</p></article>
+        <article class="rounded-2xl bg-white p-8 text-center shadow-md ring-1 ring-emerald-100 transition duration-300 hover:-translate-y-1 hover:shadow-soft">
+          <div class="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+            <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+          </div>
+          <h3 class="text-2xl font-extrabold text-emerald-800">Eco-Profiles</h3>
+          <p class="mt-2 text-sm font-medium text-slate-600">Create and manage environmental profiles.</p>
+        </article>
+        <article class="rounded-2xl bg-white p-8 text-center shadow-md ring-1 ring-emerald-100 transition duration-300 hover:-translate-y-1 hover:shadow-soft">
+          <div class="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+            <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M8 3v4M16 3v4M4 11h16"/></svg>
+          </div>
+          <h3 class="text-2xl font-extrabold text-emerald-800">Project Permits</h3>
+          <p class="mt-2 text-sm font-medium text-slate-600">Manage permits and approvals efficiently.</p>
+        </article>
+        <article class="rounded-2xl bg-white p-8 text-center shadow-md ring-1 ring-emerald-100 transition duration-300 hover:-translate-y-1 hover:shadow-soft">
+          <div class="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+            <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><circle cx="8" cy="10" r="2"/><circle cx="16" cy="10" r="2"/><path d="M4 17c1.5-2 3.5-3 6-3s4.5 1 6 3"/></svg>
+          </div>
+          <h3 class="text-2xl font-extrabold text-emerald-800">Community Grove</h3>
+          <p class="mt-2 text-sm font-medium text-slate-600">Connect with environmental communities.</p>
+        </article>
+        <article class="rounded-2xl bg-white p-8 text-center shadow-md ring-1 ring-emerald-100 transition duration-300 hover:-translate-y-1 hover:shadow-soft">
+          <div class="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+            <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><path d="M12 4v8"/><path d="M8 8h8"/><circle cx="12" cy="14" r="6"/></svg>
+          </div>
+          <h3 class="text-2xl font-extrabold text-emerald-800">Health Check</h3>
+          <p class="mt-2 text-sm font-medium text-slate-600">Monitor forest and tree health status.</p>
+        </article>
+        <article class="rounded-2xl bg-white p-8 text-center shadow-md ring-1 ring-emerald-100 transition duration-300 hover:-translate-y-1 hover:shadow-soft">
+          <div class="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+            <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v6c0 4-3.4 6.9-8 8-4.6-1.1-8-4-8-8V7z"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <h3 class="text-2xl font-extrabold text-emerald-800">Certificates</h3>
+          <p class="mt-2 text-sm font-medium text-slate-600">Obtain environmental certifications.</p>
+        </article>
+        <article class="rounded-2xl bg-white p-8 text-center shadow-md ring-1 ring-emerald-100 transition duration-300 hover:-translate-y-1 hover:shadow-soft">
+          <div class="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+            <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><path d="M12 2l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.5-.8z"/></svg>
+          </div>
+          <h3 class="text-2xl font-extrabold text-emerald-800">Tree Events</h3>
+          <p class="mt-2 text-sm font-medium text-slate-600">Organize environmental events.</p>
+        </article>
       </div>
     </section>
 
-    <section id="resources" class="mx-auto max-w-6xl px-4 pb-16 sm:px-6 lg:px-8 lg:pb-20">
-      <div class="rounded-3xl bg-emerald-800 px-6 py-14 text-center text-white shadow-2xl shadow-emerald-900/20 sm:px-12">
+    <section id="resources" class="relative overflow-hidden bg-forest-700 text-white">
+          <!-- Tree Management Table Section -->
+          <section id="tree-management" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+            <div class="mb-8 text-center">
+              <h2 class="text-4xl font-extrabold tracking-tight text-forest-700">Tree Management</h2>
+              <p class="mt-3 text-base font-medium text-slate-600">Live inventory of all registered trees</p>
+            </div>
+            <div class="mb-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+              <input id="treeSearchInput" type="text" placeholder="Search trees..." class="w-full max-w-xs rounded-xl border border-emerald-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-forest-400 focus:ring-2 focus:ring-forest-100" />
+              <span id="loadingMessage" class="ml-4 text-sm font-semibold text-emerald-700 hidden">Loading trees...</span>
+            </div>
+            <div class="overflow-x-auto rounded-2xl bg-white shadow ring-1 ring-emerald-100">
+              <table class="min-w-full divide-y divide-emerald-100 text-left text-sm">
+                <thead class="bg-emerald-50">
+                  <tr>
+                    <th class="px-4 py-3 font-bold uppercase tracking-wide text-emerald-800">Tree Id</th>
+                    <th class="px-4 py-3 font-bold uppercase tracking-wide text-emerald-800">Species</th>
+                    <th class="px-4 py-3 font-bold uppercase tracking-wide text-emerald-800">Location</th>
+                    <th class="px-4 py-3 font-bold uppercase tracking-wide text-emerald-800">Height (m)</th>
+                    <th class="px-4 py-3 font-bold uppercase tracking-wide text-emerald-800">DBH (cm)</th>
+                    <th class="px-4 py-3 font-bold uppercase tracking-wide text-emerald-800">Forester</th>
+                    <th class="px-4 py-3 font-bold uppercase tracking-wide text-emerald-800">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="treesTableBody" class="divide-y divide-emerald-50 bg-white"></tbody>
+              </table>
+            </div>
+          </section>
+      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,0.16),transparent_35%)]" aria-hidden="true"></div>
+      <div class="mx-auto max-w-6xl px-4 py-14 text-center sm:px-6 lg:px-8">
         <h2 class="text-5xl font-extrabold tracking-tight">Ready to Get Started?</h2>
-        <p class="mx-auto mt-4 max-w-3xl text-lg font-medium text-emerald-50">Join residents and teams already using TreeSure for faster, more organized access to environmental services.</p>
-        <a href="signup.html" class="mt-8 inline-flex items-center justify-center rounded-full bg-[#f4cd17] px-8 py-3 text-sm font-extrabold text-emerald-950 shadow-lg transition hover:brightness-95">Create Your Account Now</a>
+        <p class="mx-auto mt-4 max-w-3xl text-lg font-medium leading-8 text-emerald-50">Join residents and teams already using TreeSure for faster, more organized access to environmental services.</p>
+        <a href="login.html" class="group mt-8 inline-flex items-center justify-center gap-2 rounded-full border border-[#f4cd17] bg-[#f4cd17] px-9 py-3.5 text-sm font-extrabold uppercase tracking-[0.08em] text-emerald-950 shadow-[0_16px_30px_-14px_rgba(0,0,0,0.45)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#f7d845] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-700">
+          Log In Now
+          <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+        </a>
       </div>
     </section>
   </main>
@@ -144,7 +240,7 @@
     <div class="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-4 lg:px-8">
       <section>
         <div class="flex items-center gap-3">
-          <img src="assets/images/treesurelogo.png" alt="TreeSure logo" class="h-10 w-10 rounded-xl border border-slate-600 bg-white/90 p-1" />
+          <img src="assets/images/treesurelogo.png" alt="TreeSure logo" class="h-12 w-auto object-contain" />
           <h3 class="text-2xl font-extrabold text-white">TreeSure</h3>
         </div>
         <p class="mt-4 text-sm font-medium leading-6 text-slate-300">Serving communities through accessible and efficient digital environmental governance.</p>
@@ -184,6 +280,60 @@
     </div>
   </footer>
 
+  <div id="chatbotWidget" class="fixed bottom-6 right-6 z-[60] flex flex-col items-end gap-2">
+    <p class="rounded-full border border-forest-200 bg-white/95 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.14em] text-forest-700 shadow-md">Need help? Chat now</p>
+    <button id="chatbotToggle" type="button" aria-label="Open chatbot" class="group relative inline-flex h-14 w-14 items-center justify-center rounded-full border border-forest-300/80 bg-gradient-to-r from-forest-700 to-forest-600 text-white shadow-[0_20px_35px_-18px_rgba(0,0,0,0.7)] transition duration-300 hover:-translate-y-1 hover:from-forest-600 hover:to-forest-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-300 focus-visible:ring-offset-2">
+      <span class="pointer-events-none absolute inset-0 rounded-full bg-forest-400/30 opacity-70 animate-pulse"></span>
+      <span class="absolute -right-1 -top-1 rounded-full bg-[#f4cd17] px-1.5 py-0.5 text-[10px] font-black leading-none text-emerald-950 shadow">AI</span>
+      <span class="relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/25 bg-white/15 shadow-inner shadow-black/10">
+        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <rect x="6" y="6" width="12" height="12" rx="5" />
+          <circle cx="10" cy="11" r="1" fill="currentColor" stroke="none" />
+          <circle cx="14" cy="11" r="1" fill="currentColor" stroke="none" />
+          <path d="M9.5 14.2c.7.6 1.5.9 2.5.9s1.8-.3 2.5-.9" stroke-linecap="round" />
+        </svg>
+      </span>
+    </button>
+
+    <section id="chatbotPanel" class="mt-3 hidden w-[min(92vw,410px)] overflow-hidden rounded-2xl border border-forest-200 bg-white shadow-[0_24px_55px_-25px_rgba(0,0,0,0.45)]">
+      <header class="flex items-center justify-between border-b border-slate-200 bg-gradient-to-r from-forest-50 to-white px-4 py-3">
+        <div class="flex items-center gap-2.5">
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-forest-200 bg-white text-forest-700 shadow-sm">
+            <svg viewBox="0 0 24 24" fill="none" class="h-4.5 w-4.5" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <rect x="6" y="6" width="12" height="12" rx="5" />
+              <circle cx="10" cy="11" r="1" fill="currentColor" stroke="none" />
+              <circle cx="14" cy="11" r="1" fill="currentColor" stroke="none" />
+              <path d="M9.5 14.2c.7.6 1.5.9 2.5.9s1.8-.3 2.5-.9" stroke-linecap="round" />
+            </svg>
+          </span>
+          <div>
+          <h3 class="text-sm font-extrabold tracking-wide text-forest-800">TreeSure Chatbot</h3>
+          <p class="mt-0.5 inline-flex items-center gap-1 text-xs font-semibold text-forest-600"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>Online</p>
+          </div>
+        </div>
+        <button id="chatbotMinimize" type="button" class="rounded-lg px-2 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700" aria-label="Minimize chatbot">Hide</button>
+      </header>
+
+      <div id="chatbotMessages" class="h-72 space-y-3 overflow-y-auto bg-slate-50 px-4 py-4">
+        <div class="max-w-[85%] rounded-2xl rounded-tl-sm bg-forest-700 px-3 py-2 text-sm font-medium leading-6 text-white">Hello, I am your TreeSure Chatbot. Ask me about services, permits, or how to get started.</div>
+      </div>
+
+      <div class="border-t border-slate-200 bg-white px-4 py-3">
+        <div class="mb-3 flex flex-wrap gap-2">
+          <button type="button" data-chatbot-prompt="How do I apply for a permit?" class="rounded-full border border-forest-200 bg-forest-50 px-3 py-1 text-xs font-bold text-forest-700 transition hover:bg-forest-100">Permit help</button>
+          <button type="button" data-chatbot-prompt="What services are available?" class="rounded-full border border-forest-200 bg-forest-50 px-3 py-1 text-xs font-bold text-forest-700 transition hover:bg-forest-100">Services</button>
+          <button type="button" data-chatbot-prompt="How do I log in?" class="rounded-full border border-forest-200 bg-forest-50 px-3 py-1 text-xs font-bold text-forest-700 transition hover:bg-forest-100">Login guide</button>
+        </div>
+
+        <form id="chatbotForm" class="flex items-center gap-2">
+          <input id="chatbotInput" type="text" placeholder="Ask the chatbot..." class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:border-forest-400 focus:ring-2 focus:ring-forest-100" />
+          <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-forest-700 px-3 py-2.5 text-sm font-bold text-white transition hover:bg-forest-600">Send</button>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <script src="js/tree-table.js" type="module"></script>
   <script>
     const dateEl = document.getElementById("liveDateTime");
     if (dateEl) {
@@ -201,6 +351,151 @@
       updateTime();
       setInterval(updateTime, 1000);
     }
+
+    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+    const metricMap = {
+      permit: {
+        valueEl: document.getElementById("permitValue"),
+        barEl: document.getElementById("permitBar"),
+        min: 70,
+        max: 98,
+        current: 84
+      },
+      field: {
+        valueEl: document.getElementById("fieldValue"),
+        barEl: document.getElementById("fieldBar"),
+        min: 45,
+        max: 85,
+        current: 63
+      },
+      report: {
+        valueEl: document.getElementById("reportValue"),
+        barEl: document.getElementById("reportBar"),
+        min: 75,
+        max: 100,
+        current: 92
+      }
+    };
+
+    const updatedAtEl = document.getElementById("opsUpdatedAt");
+
+    const renderMetric = (metric) => {
+      if (!metric.valueEl || !metric.barEl) return;
+      metric.valueEl.textContent = `${metric.current}%`;
+      metric.barEl.style.width = `${metric.current}%`;
+    };
+
+    const updateOperationsSnapshot = () => {
+      Object.values(metricMap).forEach((metric) => {
+        const delta = Math.floor(Math.random() * 7) - 3;
+        metric.current = clamp(metric.current + delta, metric.min, metric.max);
+        renderMetric(metric);
+      });
+
+      if (updatedAtEl) {
+        updatedAtEl.textContent = `Updated: ${new Date().toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        })}`;
+      }
+    };
+
+    updateOperationsSnapshot();
+    setInterval(updateOperationsSnapshot, 5000);
+
+    const chatbotToggle = document.getElementById("chatbotToggle");
+    const chatbotPanel = document.getElementById("chatbotPanel");
+    const chatbotMinimize = document.getElementById("chatbotMinimize");
+    const chatbotMessages = document.getElementById("chatbotMessages");
+    const chatbotForm = document.getElementById("chatbotForm");
+    const chatbotInput = document.getElementById("chatbotInput");
+    const chatbotQuickPrompts = document.querySelectorAll("[data-chatbot-prompt]");
+
+    const addChatbotMessage = (sender, text) => {
+      if (!chatbotMessages) return;
+
+      const wrapper = document.createElement("div");
+      wrapper.className = sender === "user" ? "flex justify-end" : "flex justify-start";
+
+      const bubble = document.createElement("div");
+      bubble.className = sender === "user"
+        ? "max-w-[85%] rounded-2xl rounded-tr-sm bg-forest-100 px-3 py-2 text-sm font-semibold leading-6 text-forest-900"
+        : "max-w-[85%] rounded-2xl rounded-tl-sm bg-forest-700 px-3 py-2 text-sm font-medium leading-6 text-white";
+      bubble.textContent = text;
+
+      wrapper.appendChild(bubble);
+      chatbotMessages.appendChild(wrapper);
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    };
+
+    const getChatbotReply = (message) => {
+      const normalized = message.toLowerCase();
+
+      if (normalized.includes("permit")) {
+        return "To apply for a permit, go to Services, choose Project Permits, prepare your documents, then submit the application online.";
+      }
+
+      if (normalized.includes("service") || normalized.includes("available")) {
+        return "TreeSure offers Eco-Profiles, Project Permits, Community Grove, Health Check, Certificates, and Tree Events.";
+      }
+
+      if (normalized.includes("login") || normalized.includes("log in") || normalized.includes("sign in")) {
+        return "Click the Log In button in the hero section or in the call-to-action section, then enter your registered credentials.";
+      }
+
+      if (normalized.includes("contact") || normalized.includes("support")) {
+        return "You can contact TreeSure via info@treesure.gov.ph or visit the Contact section in the footer for full details.";
+      }
+
+      if (normalized.includes("status") || normalized.includes("track")) {
+        return "To track your request, log in and open your dashboard. Your latest submission status appears under recent applications.";
+      }
+
+      return "I can help with permits, services, login guidance, and contact details. Try asking: 'How do I apply for a permit?'";
+    };
+
+    const toggleChatbotPanel = () => {
+      if (!chatbotPanel) return;
+      chatbotPanel.classList.toggle("hidden");
+      if (!chatbotPanel.classList.contains("hidden") && chatbotInput) {
+        chatbotInput.focus();
+      }
+    };
+
+    if (chatbotToggle) {
+      chatbotToggle.addEventListener("click", toggleChatbotPanel);
+    }
+
+    if (chatbotMinimize) {
+      chatbotMinimize.addEventListener("click", toggleChatbotPanel);
+    }
+
+    if (chatbotForm && chatbotInput) {
+      chatbotForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const message = chatbotInput.value.trim();
+        if (!message) return;
+
+        addChatbotMessage("user", message);
+        chatbotInput.value = "";
+
+        setTimeout(() => {
+          addChatbotMessage("bot", getChatbotReply(message));
+        }, 450);
+      });
+    }
+
+    chatbotQuickPrompts.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!chatbotInput) return;
+        chatbotInput.value = button.getAttribute("data-chatbot-prompt") || "";
+        if (chatbotForm) {
+          chatbotForm.requestSubmit();
+        }
+      });
+    });
   </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-import { db, checkLogin, logout } from "./script.js";
+import { db, checkLogin } from "./script.js";
 import {
   collection,
   getDocs,
@@ -32,6 +32,9 @@ let applicationsData = [];
 let appointmentsData = [];
 let statusChartInstance = null;
 let speciesChartInstance = null;
+let submissionsTrendChartInstance = null;
+let activityTrendChartInstance = null;
+let topContributorsChartInstance = null;
 let activeTab = "trees"; // track which tab is selected, default to trees
 
 // Cache keys for sessionStorage
@@ -43,7 +46,6 @@ const CACHE_KEYS = {
 
 // --- Init ---
 checkLogin();
-document.getElementById("logoutBtn")?.addEventListener("click", logout);
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadData();
@@ -632,6 +634,29 @@ function escapeHtml(text) {
 function updateCharts(data) {
   drawStatusChart(data);
   drawSpeciesChart(data);
+  drawSubmissionsTrendChart(data);
+  drawActivityTrendChart(data);
+  drawTopContributorsChart(data);
+}
+
+function normalizeDateKey(value) {
+  if (!(value instanceof Date) || Number.isNaN(value.getTime())) return null;
+  return value.toISOString().split("T")[0];
+}
+
+function formatDateLabel(dateKey) {
+  const d = new Date(`${dateKey}T00:00:00`);
+  return d.toLocaleDateString("en-US", { month: "short", day: "2-digit" });
+}
+
+function getDateBuckets(data) {
+  const buckets = {};
+  data.forEach((item) => {
+    const key = normalizeDateKey(item.date);
+    if (!key) return;
+    buckets[key] = (buckets[key] || 0) + 1;
+  });
+  return buckets;
 }
 
 function drawStatusChart(data) {
@@ -671,7 +696,8 @@ function drawStatusChart(data) {
       ],
     },
     options: { 
-      responsive: true, 
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: { 
         legend: { position: "bottom" },
         title: {
@@ -726,6 +752,7 @@ function drawSpeciesChart(data) {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: { 
         legend: { display: false },
         title: {
@@ -740,6 +767,177 @@ function drawSpeciesChart(data) {
           beginAtZero: true,
           ticks: { stepSize: 1 }
         }
+      },
+    },
+  });
+}
+
+function drawSubmissionsTrendChart(data) {
+  const ctxEl = document.getElementById("submissionsTrendChart");
+  if (!ctxEl) return;
+  const ctx = ctxEl.getContext("2d");
+  if (submissionsTrendChartInstance) submissionsTrendChartInstance.destroy();
+
+  const dateBuckets = getDateBuckets(data);
+  const sortedKeys = Object.keys(dateBuckets).sort();
+  const labels = sortedKeys.length ? sortedKeys.map(formatDateLabel) : ["No data"];
+  const values = sortedKeys.length ? sortedKeys.map((k) => dateBuckets[k]) : [0];
+
+  submissionsTrendChartInstance = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Records",
+          data: values,
+          borderColor: "#467f3c",
+          backgroundColor: "rgba(70, 127, 60, 0.15)",
+          pointBackgroundColor: "#467f3c",
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          tension: 0.35,
+          fill: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: "Record Volume Trend",
+          font: { size: 14, weight: "bold" },
+        },
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1 } },
+      },
+    },
+  });
+}
+
+function drawActivityTrendChart(data) {
+  const ctxEl = document.getElementById("activityTrendChart");
+  if (!ctxEl) return;
+  const ctx = ctxEl.getContext("2d");
+  if (activityTrendChartInstance) activityTrendChartInstance.destroy();
+
+  const aggregates = {};
+  data.forEach((item) => {
+    const dateKey = normalizeDateKey(item.date);
+    if (!dateKey) return;
+    if (!aggregates[dateKey]) aggregates[dateKey] = { sum: 0, count: 0 };
+
+    const metric = activeTab === "trees"
+      ? Number(item.volume || 0)
+      : Number(item.uploadCount || 0);
+
+    aggregates[dateKey].sum += Number.isFinite(metric) ? metric : 0;
+    aggregates[dateKey].count += 1;
+  });
+
+  const sortedKeys = Object.keys(aggregates).sort();
+  const labels = sortedKeys.length ? sortedKeys.map(formatDateLabel) : ["No data"];
+  const values = sortedKeys.length
+    ? sortedKeys.map((k) => {
+        const { sum, count } = aggregates[k];
+        if (count === 0) return 0;
+        return activeTab === "trees" ? Number((sum / count).toFixed(2)) : sum;
+      })
+    : [0];
+
+  const datasetLabel = activeTab === "trees" ? "Avg Volume" : "Uploads";
+  const titleText = activeTab === "trees"
+    ? "Average Tree Volume Trend"
+    : "Upload Activity Trend";
+
+  activityTrendChartInstance = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: datasetLabel,
+          data: values,
+          borderColor: "#1d4ed8",
+          backgroundColor: "rgba(29, 78, 216, 0.12)",
+          pointBackgroundColor: "#1d4ed8",
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          tension: 0.35,
+          fill: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: titleText,
+          font: { size: 14, weight: "bold" },
+        },
+      },
+      scales: {
+        y: { beginAtZero: true },
+      },
+    },
+  });
+}
+
+function drawTopContributorsChart(data) {
+  const ctxEl = document.getElementById("topContributorsChart");
+  if (!ctxEl) return;
+  const ctx = ctxEl.getContext("2d");
+  if (topContributorsChartInstance) topContributorsChartInstance.destroy();
+
+  const counts = {};
+  data.forEach((item) => {
+    const key = activeTab === "trees"
+      ? (item.forester || "Unknown Forester")
+      : (item.applicant || "Unknown Applicant");
+    counts[key] = (counts[key] || 0) + 1;
+  });
+
+  const sorted = Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
+
+  const labels = sorted.length ? sorted.map(([k]) => k) : ["No data"];
+  const values = sorted.length ? sorted.map(([, v]) => v) : [0];
+  const titleText = activeTab === "trees" ? "Top Foresters by Tree Records" : "Top Applicants by Submissions";
+
+  topContributorsChartInstance = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          data: values,
+          backgroundColor: "#467f3c",
+          borderRadius: 8,
+        },
+      ],
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: titleText,
+          font: { size: 14, weight: "bold" },
+        },
+      },
+      scales: {
+        x: { beginAtZero: true, ticks: { stepSize: 1 } },
       },
     },
   });
@@ -921,47 +1119,51 @@ function showApplicationDetails(application) {
               ? comment.createdAt.toLocaleString() 
               : "N/A";
             return `
-              <div style="margin-left: 20px; padding: 10px; background: #f9f9f9; border-left: 3px solid #4caf50; margin-bottom: 8px;">
-                <strong>From:</strong> ${escapeHtml(comment.from)}<br>
-                <strong>Message:</strong> ${escapeHtml(comment.message)}<br>
-                <strong>Date:</strong> ${commentDate}
+              <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                <p><span class="font-bold text-forest-900">From:</span> ${escapeHtml(comment.from)}</p>
+                <p class="mt-1"><span class="font-bold text-forest-900">Message:</span> ${escapeHtml(comment.message)}</p>
+                <p class="mt-1"><span class="font-bold text-forest-900">Date:</span> ${commentDate}</p>
               </div>
             `;
           }).join("")
-        : "<p style='margin-left: 20px; color: #888;'>No comments</p>";
+        : "<p class='text-sm font-medium text-slate-500'>No comments yet.</p>";
       
       const reuploadBadge = upload.reuploadAllowed 
-        ? '<span style="background: #ff9800; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px;">⚠️ REUPLOAD REQUIRED</span>'
-        : '<span style="background: #4caf50; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px;">✓ APPROVED</span>';
+        ? '<span class="inline-flex items-center rounded-full bg-amber-500 px-2.5 py-1 text-xs font-bold text-white">Reupload Required</span>'
+        : '<span class="inline-flex items-center rounded-full bg-emerald-600 px-2.5 py-1 text-xs font-bold text-white">Approved</span>';
       
       const uploadedAtStr = upload.uploadedAt ? upload.uploadedAt.toLocaleString() : "N/A";
       
       const fileLink = upload.fileUrl 
-        ? `<a href="${escapeHtml(upload.fileUrl)}" target="_blank" style="color: #2e7d32; text-decoration: none;">🔗 View File</a>`
+        ? `<a href="${escapeHtml(upload.fileUrl)}" target="_blank" class="inline-flex items-center text-sm font-bold text-forest-700 hover:text-forest-800">View File</a>`
         : "No file URL";
 
       return `
-        <div style="margin-bottom: 20px; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 8px;">
-          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-            <h4 style="margin: 0; color: #2e7d32;">📄 ${index + 1}. ${escapeHtml(upload.title)}</h4>
+        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div class="mb-3 flex flex-wrap items-start justify-between gap-2">
+            <h4 class="text-base font-extrabold text-forest-900">${index + 1}. ${escapeHtml(upload.title)}</h4>
             ${reuploadBadge}
           </div>
-          <p><strong>File Name:</strong> ${escapeHtml(upload.fileName)}</p>
-          <p><strong>Document ID:</strong> <code>${escapeHtml(upload.id)}</code></p>
-          <p><strong>Uploaded At:</strong> ${uploadedAtStr}</p>
-          <p><strong>File:</strong> ${fileLink}</p>
-          <h5 style="margin: 15px 0 5px 0; color: #555;">💬 Comments (${upload.comments.length}):</h5>
-          ${commentsHtml}
-        </div>
+          <div class="space-y-1 text-sm text-slate-700">
+            <p><span class="font-bold text-forest-900">File Name:</span> ${escapeHtml(upload.fileName)}</p>
+            <p><span class="font-bold text-forest-900">Document ID:</span> <code class="break-all rounded bg-slate-100 px-1.5 py-0.5 text-xs">${escapeHtml(upload.id)}</code></p>
+            <p><span class="font-bold text-forest-900">Uploaded At:</span> ${uploadedAtStr}</p>
+            <p><span class="font-bold text-forest-900">File:</span> ${fileLink}</p>
+          </div>
+          <div class="mt-4 border-t border-slate-200 pt-3">
+            <h5 class="mb-2 text-sm font-extrabold text-slate-700">Comments (${upload.comments.length})</h5>
+            <div class="space-y-2">${commentsHtml}</div>
+          </div>
+        </article>
       `;
     }).join("");
   } else {
-    uploadsHtml = "<p style='color: #888; text-align: center; padding: 20px;'>📭 No uploads found for this submission</p>";
+    uploadsHtml = "<p class='rounded-xl border border-slate-200 bg-slate-50 px-4 py-5 text-center text-sm font-medium text-slate-500'>No uploads found for this submission.</p>";
   }
 
   const statusBadge = application.status === "submitted" 
-    ? '<span style="background: #4caf50; color: white; padding: 5px 12px; border-radius: 6px; font-weight: bold;">✓ Submitted</span>'
-    : '<span style="background: #ff9800; color: white; padding: 5px 12px; border-radius: 6px; font-weight: bold;">📝 Draft</span>';
+    ? '<span class="inline-flex items-center rounded-full bg-emerald-600 px-3 py-1 text-sm font-bold text-white">Submitted</span>'
+    : '<span class="inline-flex items-center rounded-full bg-amber-500 px-3 py-1 text-sm font-bold text-white">Draft</span>';
   
   const createdAtStr = application.createdAt ? application.createdAt.toLocaleString() : "N/A";
   const submittedAtStr = application.submittedAt ? application.submittedAt.toLocaleString() : "Not yet submitted";
@@ -969,59 +1171,41 @@ function showApplicationDetails(application) {
   const lastUpdatedStr = application.lastUpdated ? application.lastUpdated.toLocaleString() : "N/A";
   
   content.innerHTML = `
-    <div style="padding: 10px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+    <div class="space-y-5">
+      <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 style="color: #2e7d32; margin: 0;">📋 ${escapeHtml(application.applicant)}</h3>
-          ${application.submissionsCount > 1 ? `<small style="color: #666;">Applicant has ${application.submissionsCount} total submission(s)</small>` : ''}
+          <h3 class="text-2xl font-black text-forest-900">${escapeHtml(application.applicant)}</h3>
+          ${application.submissionsCount > 1 ? `<p class="mt-1 text-sm font-medium text-slate-500">Applicant has ${application.submissionsCount} total submissions.</p>` : ''}
         </div>
         ${statusBadge}
       </div>
-      
-      <div style="background: linear-gradient(135deg, #f0f8e8 0%, #e8f5e9 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 5px solid #2e7d32;">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
-          <div>
-            <p style="margin: 5px 0;"><strong>🆔 Applicant ID:</strong><br><code style="background: white; padding: 3px 6px; border-radius: 4px;">${escapeHtml(application.id)}</code></p>
-          </div>
-          <div>
-            <p style="margin: 5px 0;"><strong>📋 Submission ID:</strong><br><code style="background: white; padding: 3px 6px; border-radius: 4px;">${escapeHtml(application.submissionId || "N/A")}</code></p>
-          </div>
-          <div>
-            <p style="margin: 5px 0;"><strong>📂 Application Type:</strong><br>${escapeHtml(application.type.toUpperCase())}</p>
-          </div>
-          ${application.permitType !== "N/A" ? `
-          <div>
-            <p style="margin: 5px 0;"><strong>📋 Permit Type:</strong><br>${escapeHtml(application.permitType)}</p>
-          </div>
-          ` : ''}
-          <div>
-            <p style="margin: 5px 0;"><strong>📅 Created:</strong><br>${createdAtStr}</p>
-          </div>
-          <div>
-            <p style="margin: 5px 0;"><strong>✅ Submitted:</strong><br>${submittedAtStr}</p>
-          </div>
-          <div>
-            <p style="margin: 5px 0;"><strong>🔄 Last Updated:</strong><br>${lastUpdatedStr}</p>
-          </div>
-          <div>
-            <p style="margin: 5px 0;"><strong>📤 Date:</strong><br>${dateSubmitted}</p>
-          </div>
+
+      <section class="rounded-2xl border border-forest-100 bg-gradient-to-br from-forest-50 to-white p-5">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="rounded-xl bg-white p-3 ring-1 ring-slate-100"><p class="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Applicant ID</p><p class="mt-1 break-all text-sm font-semibold text-slate-800">${escapeHtml(application.id)}</p></div>
+          <div class="rounded-xl bg-white p-3 ring-1 ring-slate-100"><p class="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Submission ID</p><p class="mt-1 break-all text-sm font-semibold text-slate-800">${escapeHtml(application.submissionId || "N/A")}</p></div>
+          <div class="rounded-xl bg-white p-3 ring-1 ring-slate-100"><p class="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Application Type</p><p class="mt-1 text-sm font-semibold text-slate-800">${escapeHtml(application.type.toUpperCase())}</p></div>
+          ${application.permitType !== "N/A" ? `<div class="rounded-xl bg-white p-3 ring-1 ring-slate-100"><p class="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Permit Type</p><p class="mt-1 text-sm font-semibold text-slate-800">${escapeHtml(application.permitType)}</p></div>` : ''}
+          <div class="rounded-xl bg-white p-3 ring-1 ring-slate-100"><p class="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Created</p><p class="mt-1 text-sm font-semibold text-slate-800">${createdAtStr}</p></div>
+          <div class="rounded-xl bg-white p-3 ring-1 ring-slate-100"><p class="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Submitted</p><p class="mt-1 text-sm font-semibold text-slate-800">${submittedAtStr}</p></div>
+          <div class="rounded-xl bg-white p-3 ring-1 ring-slate-100"><p class="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Last Updated</p><p class="mt-1 break-all text-sm font-semibold text-slate-800">${lastUpdatedStr}</p></div>
+          <div class="rounded-xl bg-white p-3 ring-1 ring-slate-100"><p class="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Date</p><p class="mt-1 text-sm font-semibold text-slate-800">${dateSubmitted}</p></div>
         </div>
-        
-        <div style="display: flex; gap: 30px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #c8e6c9;">
-          <p style="margin: 5px 0;"><strong>📁 Total Uploads:</strong> <span style="color: #2e7d32; font-size: 18px; font-weight: bold;">${application.uploadCount || 0}</span></p>
-          <p style="margin: 5px 0;"><strong>💬 Total Comments:</strong> <span style="color: #2e7d32; font-size: 18px; font-weight: bold;">${application.commentCount || 0}</span></p>
+
+        <div class="mt-4 grid gap-3 sm:grid-cols-2">
+          <div class="rounded-xl border border-forest-200 bg-white px-4 py-3"><p class="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Total Uploads</p><p class="mt-1 text-2xl font-black text-forest-700">${application.uploadCount || 0}</p></div>
+          <div class="rounded-xl border border-forest-200 bg-white px-4 py-3"><p class="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Total Comments</p><p class="mt-1 text-2xl font-black text-forest-700">${application.commentCount || 0}</p></div>
         </div>
-      </div>
-      
-      <hr style="margin: 25px 0; border: none; border-top: 2px solid #e0e0e0;">
-      
-      <h3 style="color: #2e7d32; margin-bottom: 15px;">📁 Uploaded Documents & Comments</h3>
-      ${uploadsHtml}
+      </section>
+
+      <section class="space-y-3">
+        <h4 class="text-lg font-extrabold text-forest-900">Uploaded Documents & Comments</h4>
+        <div class="space-y-3">${uploadsHtml}</div>
+      </section>
     </div>
   `;
 
-  modal.style.display = "block";
+  modal.style.display = "flex";
 }
 
 // Close modal functionality

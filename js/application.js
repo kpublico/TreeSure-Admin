@@ -1,4 +1,4 @@
-import { db, checkLogin, logout } from "./script.js";
+import { db, checkLogin } from "./script.js";
 import {
   collection,
   getDocs,
@@ -25,6 +25,7 @@ let submissionSelector, submissionDropdown;
 let scheduleContainer, scheduleBtn, scheduleModal, closeModal, saveAppointmentBtn;
 let proceedBtn;
 let commentBtn, commentModal, closeCommentModal, sendCommentBtn, commentDocumentSelect;
+let selectedCommentDocuments = []; // Track selected document IDs
 let claimCertificateBtn, claimCertificateModal, closeClaimCertificateModal, sendClaimNotificationBtn;
 let claimApplicantName, claimCertificateType, claimMessage, claimRemarks;
 let manageTemplatesBtn, templateModal, closeTemplateModal, uploadTemplateFileBtn, templateFileInput;
@@ -150,7 +151,14 @@ async function displayApplicationTypeTemplates(appType) {
       const title = templateData.title || "Template";
       const description = templateData.description || "";
       const fileName = templateData.fileName || "Unknown";
-      const url = templateData.url || "";
+      const url = (
+        templateData.url ||
+        templateData.URL ||
+        templateData.downloadURL ||
+        templateData.downloadUrl ||
+        templateData.fileUrl ||
+        ""
+      ).trim();
       
       if (!url || url.trim() === "") return;
 
@@ -1654,6 +1662,9 @@ if (closeFilePreview && !closeFilePreview.dataset.listenerAttached) {
 
 // Function to attach listeners once sidebar is loaded
 function attachSidebarListeners() {
+  if (window.__applicationSidebarListenersAttached) return;
+  window.__applicationSidebarListenersAttached = true;
+
   const ctpoBtn = document.getElementById("ctpoBtn");
   const pltpBtn = document.getElementById("pltpBtn");
   const spltpBtn = document.getElementById("spltpBtn");
@@ -1709,7 +1720,7 @@ function initCommentModal() {
   commentModal = document.getElementById("commentModal");
   closeCommentModal = document.getElementById("closeCommentModal");
   sendCommentBtn = document.getElementById("sendCommentBtn");
-  commentDocumentSelect = document.getElementById("commentDocumentSelect");
+  commentDocumentSelect = document.getElementById("commentDocumentButtonContainer");
 
   if (!commentBtn || !commentModal) return; // Elements not ready yet
 
@@ -1722,11 +1733,7 @@ commentBtn.addEventListener("click", async () => {
   showModal(commentModal);
 
   if (commentDocumentSelect) {
-    commentDocumentSelect.innerHTML = "";
-    const loadingOpt = document.createElement("option");
-    loadingOpt.textContent = "Loading documents...";
-    loadingOpt.disabled = true;
-    commentDocumentSelect.appendChild(loadingOpt);
+    commentDocumentSelect.innerHTML = '<p class="text-slate-500 text-sm animate-pulse">Loading documents...</p>';
   }
 
   // Populate the document dropdown asynchronously so modal opens instantly
@@ -1737,14 +1744,12 @@ commentBtn.addEventListener("click", async () => {
 async function populateCommentDocuments() {
   if (sendCommentBtn) sendCommentBtn.disabled = true;
   commentDocumentSelect.innerHTML = "";
+  selectedCommentDocuments = []; // Reset selection
 
   try {
     if (!currentSubmissionId) {
       console.warn("⚠️ No submission selected");
-      const opt = document.createElement("option");
-      opt.textContent = "No submission selected";
-      opt.disabled = true;
-      commentDocumentSelect.appendChild(opt);
+      commentDocumentSelect.innerHTML = '<p class="text-slate-500 text-sm">No submission selected</p>';
       return;
     }
 
@@ -1759,10 +1764,7 @@ async function populateCommentDocuments() {
     
     if (uploadsSnap.empty) {
       console.warn("⚠️ No uploads found in submission");
-      const opt = document.createElement("option");
-      opt.textContent = "No documents uploaded";
-      opt.disabled = true;
-      commentDocumentSelect.appendChild(opt);
+      commentDocumentSelect.innerHTML = '<p class="text-slate-500 text-sm">No documents uploaded</p>';
       return;
     }
 
@@ -1786,26 +1788,37 @@ async function populateCommentDocuments() {
       const fileName = docData.fileName || "Unknown";
       const title = docData.title || docId;
 
-      const opt = document.createElement("option");
-      opt.value = docId; // Use the document ID as value
-      opt.textContent = `${title} - ${fileName}`;
-      commentDocumentSelect.appendChild(opt);
+      // Create button for document
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.dataset.docId = docId;
+      btn.textContent = `${title} - ${fileName}`;
+      btn.className = "w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-left font-medium text-slate-700 transition hover:border-forest-600 hover:bg-forest-50";
+      
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        // Toggle selection
+        if (selectedCommentDocuments.includes(docId)) {
+          selectedCommentDocuments = selectedCommentDocuments.filter(id => id !== docId);
+          btn.classList.remove("border-forest-700", "bg-forest-700", "text-white");
+          btn.classList.add("border-slate-300", "bg-white", "text-slate-700");
+        } else {
+          selectedCommentDocuments.push(docId);
+          btn.classList.remove("border-slate-300", "bg-white", "text-slate-700");
+          btn.classList.add("border-forest-700", "bg-forest-700", "text-white");
+        }
+      });
+      
+      commentDocumentSelect.appendChild(btn);
     });
 
     if (!hasValidUploads) {
       console.warn("⚠️ No valid uploaded documents found");
-      commentDocumentSelect.innerHTML = "";
-      const opt = document.createElement("option");
-      opt.textContent = "No documents uploaded";
-      opt.disabled = true;
-      commentDocumentSelect.appendChild(opt);
+      commentDocumentSelect.innerHTML = '<p class="text-slate-500 text-sm">No documents uploaded</p>';
     }
   } catch (err) {
     console.error("Error loading documents for comment:", err);
-    const opt = document.createElement("option");
-    opt.textContent = "Error loading documents";
-    opt.disabled = true;
-    commentDocumentSelect.appendChild(opt);
+    commentDocumentSelect.innerHTML = '<p class="text-red-500 text-sm">Error loading documents</p>';
   } finally {
     if (sendCommentBtn) sendCommentBtn.disabled = false;
   }
@@ -1815,11 +1828,20 @@ closeCommentModal.addEventListener("click", () => {
   commentModal.style.display = "none";
 });
 
+document.getElementById("cancelCommentBtn")?.addEventListener("click", () => {
+  commentModal.style.display = "none";
+  document.getElementById("commentMessage").value = "";
+  selectedCommentDocuments = [];
+  // Reset all button styles
+  commentDocumentSelect.querySelectorAll("button").forEach(btn => {
+    btn.classList.remove("border-forest-700", "bg-forest-700", "text-white");
+    btn.classList.add("border-slate-300", "bg-white", "text-slate-700");
+  });
+});
+
 sendCommentBtn.addEventListener("click", async () => {
   const message = document.getElementById("commentMessage").value.trim();
-  const selectedDocs = Array.from(commentDocumentSelect.selectedOptions).map(
-    (opt) => opt.value
-  );
+  const selectedDocs = selectedCommentDocuments;
 
   if (!message) {
     alert("Please enter your comment before sending.");
@@ -1912,7 +1934,7 @@ sendCommentBtn.addEventListener("click", async () => {
     );
 
     document.getElementById("commentMessage").value = "";
-    commentDocumentSelect.selectedIndex = -1;
+    selectedCommentDocuments = [];
     commentModal.style.display = "none";
 
     // Refresh the submission files to show updated state
@@ -2174,6 +2196,7 @@ function initTemplateModal() {
           title: title,
           description: description,
           fileName: file.name,
+          storagePath: templatePath,
           url: downloadURL,
           uploadedAt: serverTimestamp(),
           uploadedBy: getAuth().currentUser?.email || "Admin",
@@ -2203,17 +2226,26 @@ function initTemplateModal() {
 
 // Load and display existing templates for the current application type
 async function loadExistingTemplates(appType) {
-  existingTemplatesList.innerHTML = "<p style='text-align:center; color:#888;'>Loading templates...</p>";
+  existingTemplatesList.innerHTML = `
+    <div class="rounded-xl border border-emerald-100 bg-emerald-50/50 px-4 py-4 text-center text-sm font-medium text-slate-500">
+      <i class="fa-solid fa-spinner fa-spin mr-2 text-forest-700"></i>Loading templates...
+    </div>
+  `;
 
   try {
+    const { getStorage, ref: storageRef, getDownloadURL } = await import(
+      "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"
+    );
+    const storage = getStorage();
+
     const templatesRef = collection(db, "applications", appType, "templates");
     const templatesSnap = await getDocs(templatesRef);
 
     if (templatesSnap.empty) {
       existingTemplatesList.innerHTML = `
-        <p style='text-align:center; color:#888; padding:20px;'>
-          No templates uploaded yet for ${appType.toUpperCase()} applications.
-        </p>
+        <div class="rounded-xl border border-dashed border-emerald-200 bg-white px-4 py-6 text-center text-sm font-medium text-slate-500">
+          <i class="fa-regular fa-folder-open mr-2 text-forest-700"></i>No templates uploaded yet for ${escapeHtml(appType.toUpperCase())} applications.
+        </div>
       `;
       return;
     }
@@ -2228,8 +2260,46 @@ async function loadExistingTemplates(appType) {
       const title = templateData.title || "Template";
       const description = templateData.description || "";
       const fileName = templateData.fileName || "Unknown";
-      const url = templateData.url || "";
+      const savedUrl = (
+        templateData.url ||
+        templateData.URL ||
+        templateData.downloadURL ||
+        templateData.downloadUrl ||
+        templateData.fileUrl ||
+        ""
+      ).trim();
+      const storagePath = (
+        templateData.storagePath ||
+        templateData.templatePath ||
+        (fileName && fileName !== "Unknown"
+          ? `applications/${appType}/templates/${documentType}/${fileName}`
+          : "")
+      ).trim();
       const uploadedBy = templateData.uploadedBy || "Unknown";
+
+      // Refresh stale URLs from Storage when possible so View does not hit 404.
+      let url = savedUrl;
+      if (storagePath) {
+        try {
+          const freshUrl = await getDownloadURL(storageRef(storage, storagePath));
+          if (freshUrl) {
+            url = freshUrl;
+            if (freshUrl !== savedUrl || templateData.storagePath !== storagePath) {
+              await setDoc(
+                doc(db, "applications", appType, "templates", templateId),
+                {
+                  url: freshUrl,
+                  storagePath,
+                  lastUrlRefreshAt: serverTimestamp(),
+                },
+                { merge: true }
+              );
+            }
+          }
+        } catch (resolveErr) {
+          console.warn(`⚠️ Unable to refresh URL for template ${templateId}:`, resolveErr);
+        }
+      }
       
       let uploadedAt = "Unknown";
       if (templateData.uploadedAt?.toDate) {
@@ -2237,25 +2307,27 @@ async function loadExistingTemplates(appType) {
       }
 
       const templateCard = document.createElement("div");
-      templateCard.style.cssText = "border:1px solid #ddd; padding:15px; margin:10px 0; border-radius:5px; background:#f9f9f9;";
+      templateCard.className = "rounded-2xl border border-emerald-100 bg-white p-4 shadow-sm transition hover:shadow-md";
       templateCard.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:start;">
-          <div style="flex:1;">
-            <h4 style="margin:0 0 5px 0; color:#2d5016;">📄 ${escapeHtml(documentType)}</h4>
-            <p style="margin:5px 0; font-weight:bold;">${escapeHtml(title)}</p>
-            ${description ? `<p style="margin:5px 0; color:#666; font-size:0.9em;">${escapeHtml(description)}</p>` : ''}
-            <p style="margin:5px 0; font-size:0.85em; color:#888;">
-              File: ${escapeHtml(fileName)}<br/>
-              Uploaded: ${escapeHtml(uploadedAt)}<br/>
-              By: ${escapeHtml(uploadedBy)}
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div class="min-w-0 flex-1 pr-2">
+            <h4 class="mb-1 flex items-center text-lg font-black text-forest-800">
+              <i class="fa-regular fa-file-lines mr-2 text-forest-700"></i>${escapeHtml(documentType)}
+            </h4>
+            <p class="mb-1 text-xl font-black text-slate-900">${escapeHtml(title)}</p>
+            ${description ? `<p class="mb-2 text-sm font-medium text-slate-600">${escapeHtml(description)}</p>` : ''}
+            <p class="text-sm leading-6 text-slate-500">
+              <span class="block"><i class="fa-solid fa-paperclip mr-2 text-slate-400"></i>File: ${escapeHtml(fileName)}</span>
+              <span class="block"><i class="fa-regular fa-clock mr-2 text-slate-400"></i>Uploaded: ${escapeHtml(uploadedAt)}</span>
+              <span class="block"><i class="fa-regular fa-user mr-2 text-slate-400"></i>By: ${escapeHtml(uploadedBy)}</span>
             </p>
           </div>
-          <div style="display:flex; gap:10px; flex-direction:column;">
-            <button class="action-btn-secondary view-template-btn" data-url="${escapeHtml(url)}" style="white-space:nowrap;">
-              👁️ View
+          <div class="flex shrink-0 gap-2 sm:flex-col">
+            <button type="button" class="view-template-btn inline-flex items-center justify-center rounded-xl border border-slate-200 bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-200 ${url ? '' : 'cursor-not-allowed opacity-60'}" data-url="${escapeHtml(url)}" ${url ? '' : 'disabled'}>
+              <i class="fa-regular fa-eye mr-2"></i>View
             </button>
-            <button class="action-btn-secondary delete-template-btn" data-id="${escapeHtml(templateId)}" style="white-space:nowrap; background:#d32f2f; color:white;">
-              🗑️ Delete
+            <button type="button" class="delete-template-btn inline-flex items-center justify-center rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-700" data-id="${escapeHtml(templateId)}">
+              <i class="fa-regular fa-trash-can mr-2"></i>Delete
             </button>
           </div>
         </div>
@@ -2263,10 +2335,15 @@ async function loadExistingTemplates(appType) {
 
       // View template button
       templateCard.querySelector(".view-template-btn").addEventListener("click", () => {
-        if (url && url.trim() !== "") {
-          window.open(url, "_blank");
-        } else {
+        if (!url) {
           alert("Template URL not available.");
+          return;
+        }
+
+        const opened = window.open(url, "_blank", "noopener,noreferrer");
+        if (!opened) {
+          // Fallback in case popup blockers prevent opening a new tab.
+          window.location.href = url;
         }
       });
 
@@ -2299,9 +2376,9 @@ async function loadExistingTemplates(appType) {
   } catch (err) {
     console.error("❌ Error loading existing templates:", err);
     existingTemplatesList.innerHTML = `
-      <p style='text-align:center; color:#d32f2f; padding:20px;'>
-        Error loading templates: ${err.message}
-      </p>
+      <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-4 text-center text-sm font-semibold text-red-700">
+        <i class="fa-solid fa-triangle-exclamation mr-2"></i>Error loading templates: ${escapeHtml(err.message)}
+      </div>
     `;
   }
 }
@@ -2517,9 +2594,6 @@ function initElements() {
   initClaimCertificateModal();
   initTemplateModal();
 
-  // logoutBtn lives inside the dynamically-inserted sidebar
-  const _logoutBtn = document.getElementById("logoutBtn");
-  if (_logoutBtn) _logoutBtn.addEventListener("click", logout);
 }
 
 // Initialize when DOM is ready
