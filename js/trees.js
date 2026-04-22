@@ -1,4 +1,4 @@
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { db, checkLogin } from "./script.js";
 
 checkLogin();
@@ -7,23 +7,8 @@ const loadingMessage = document.getElementById("loadingMessage");
 const tableBody = document.getElementById("treesTableBody");
 const searchInput = document.getElementById("treeSearchInput");
 
-const inventoryCache = {};
+const appointmentsRef = collection(db, "appointments");
 let allTrees = [];
-
-async function fetchUserTrees(userId) {
-  if (inventoryCache[userId]) return inventoryCache[userId];
-
-  const inventoryRef = collection(db, `users/${userId}/tree_inventory`);
-  const treesSnapshot = await getDocs(inventoryRef);
-
-  const trees = treesSnapshot.docs.map((d) => ({
-    id: d.id,
-    ...d.data(),
-  }));
-
-  inventoryCache[userId] = trees;
-  return trees;
-}
 
 function escapeHtml(value) {
   if (value === null || value === undefined) return "";
@@ -48,13 +33,13 @@ function renderRows(rows) {
     const row = document.createElement("tr");
     row.className = "transition hover:bg-slate-50";
 
-    const treeId = tree.tree_no || tree.tree_id || tree.id || "N/A";
-    const species = tree.specie || tree.species || "N/A";
-    const location = tree.location || tree.municipality || tree.barangay || "N/A";
+    const treeId = tree.treeNo || tree.treeId || "N/A";
+    const species = tree.species || "N/A";
+    const location = tree.location || "N/A";
     const height = tree.height ?? "N/A";
-    const dbh = tree.diameter ?? tree.dbh ?? "N/A";
-    const forester = tree.forester_name || tree.foresterName || "Unknown Forester";
-    const status = tree.tree_status || tree.status || "Active";
+    const dbh = tree.diameter || "N/A";
+    const forester = tree.forester || "Unknown Forester";
+    const status = tree.status || "Pending";
 
     row.innerHTML = `
       <td class="px-4 py-3 font-semibold text-slate-700">${escapeHtml(treeId)}</td>
@@ -82,17 +67,11 @@ function applySearchFilter() {
 
   const filtered = allTrees.filter((tree) => {
     const haystack = [
-      tree.tree_no,
-      tree.tree_id,
-      tree.id,
-      tree.specie,
+      tree.treeNo,
+      tree.treeId,
       tree.species,
       tree.location,
-      tree.municipality,
-      tree.barangay,
-      tree.forester_name,
-      tree.foresterName,
-      tree.tree_status,
+      tree.forester,
       tree.status,
     ]
       .filter(Boolean)
@@ -109,27 +88,54 @@ async function loadTrees() {
   loadingMessage.style.display = "block";
 
   try {
-    const usersSnapshot = await getDocs(collection(db, "users"));
+    const appointmentsSnap = await getDocs(appointmentsRef);
 
-    if (usersSnapshot.empty) {
+    if (appointmentsSnap.empty) {
       loadingMessage.style.display = "none";
-      tableBody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">No users found in Firestore. Please add users and tree data.</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">No appointments found in Firestore.</td></tr>';
       return;
     }
 
-    const treePromises = usersSnapshot.docs.map(async (userDoc) => {
-      const trees = await fetchUserTrees(userDoc.id);
-      return trees.map((tree) => ({
-        ...tree,
-        applicantName: tree.applicantName || userDoc.data().name || "Unknown Applicant",
-      }));
-    });
+    for (const appointmentDoc of appointmentsSnap.docs) {
+      const appointmentData = appointmentDoc.data();
+      const appointmentId = appointmentDoc.id;
 
-    allTrees = (await Promise.all(treePromises)).flat();
+      let applicantName = "Unknown";
+      const applicantId = appointmentData.applicantId;
+      if (applicantId) {
+        try {
+          const userDocRef = doc(db, "users", applicantId);
+          const userDocSnap = await getDoc(userDocRef);
+          if (userDocSnap.exists()) {
+            applicantName = userDocSnap.data().name || "Unknown";
+          }
+        } catch (err) {
+          console.warn("Could not fetch user name for ID:", applicantId, err);
+        }
+      }
+
+      const treeInventoryRef = collection(db, `appointments/${appointmentId}/tree_inventory`);
+      const treeInventorySnap = await getDocs(treeInventoryRef);
+
+      treeInventorySnap.forEach((treeDoc) => {
+        const treeData = treeDoc.data();
+        allTrees.push({
+          treeId: treeDoc.id,
+          treeNo: treeData.tree_no || treeData.tree_id || treeDoc.id,
+          species: treeData.specie || treeData.species || "Unknown",
+          location: appointmentData.location || treeData.location || treeData.municipality || treeData.barangay || "N/A",
+          height: treeData.height ?? "N/A",
+          diameter: treeData.diameter || treeData.dbh || "N/A",
+          forester: treeData.forester_name || "Unknown Forester",
+          status: appointmentData.status || "Pending",
+          applicantName,
+        });
+      });
+    }
 
     loadingMessage.style.display = "none";
     if (allTrees.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">No trees found for any user. Please add tree data to users in Firestore.</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">No trees found in any appointment inventory.</td></tr>';
     } else {
       renderRows(allTrees);
     }

@@ -197,33 +197,6 @@
     </section>
 
     <section id="resources" class="relative overflow-hidden bg-forest-700 text-white">
-          <!-- Tree Management Table Section -->
-          <section id="tree-management" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-            <div class="mb-8 text-center">
-              <h2 class="text-4xl font-extrabold tracking-tight text-forest-700">Tree Management</h2>
-              <p class="mt-3 text-base font-medium text-slate-600">Live inventory of all registered trees</p>
-            </div>
-            <div class="mb-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
-              <input id="treeSearchInput" type="text" placeholder="Search trees..." class="w-full max-w-xs rounded-xl border border-emerald-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-forest-400 focus:ring-2 focus:ring-forest-100" />
-              <span id="loadingMessage" class="ml-4 text-sm font-semibold text-emerald-700 hidden">Loading trees...</span>
-            </div>
-            <div class="overflow-x-auto rounded-2xl bg-white shadow ring-1 ring-emerald-100">
-              <table class="min-w-full divide-y divide-emerald-100 text-left text-sm">
-                <thead class="bg-emerald-50">
-                  <tr>
-                    <th class="px-4 py-3 font-bold uppercase tracking-wide text-emerald-800">Tree Id</th>
-                    <th class="px-4 py-3 font-bold uppercase tracking-wide text-emerald-800">Species</th>
-                    <th class="px-4 py-3 font-bold uppercase tracking-wide text-emerald-800">Location</th>
-                    <th class="px-4 py-3 font-bold uppercase tracking-wide text-emerald-800">Height (m)</th>
-                    <th class="px-4 py-3 font-bold uppercase tracking-wide text-emerald-800">DBH (cm)</th>
-                    <th class="px-4 py-3 font-bold uppercase tracking-wide text-emerald-800">Forester</th>
-                    <th class="px-4 py-3 font-bold uppercase tracking-wide text-emerald-800">Status</th>
-                  </tr>
-                </thead>
-                <tbody id="treesTableBody" class="divide-y divide-emerald-50 bg-white"></tbody>
-              </table>
-            </div>
-          </section>
       <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,0.16),transparent_35%)]" aria-hidden="true"></div>
       <div class="mx-auto max-w-6xl px-4 py-14 text-center sm:px-6 lg:px-8">
         <h2 class="text-5xl font-extrabold tracking-tight">Ready to Get Started?</h2>
@@ -333,7 +306,6 @@
     </section>
   </div>
 
-  <script src="js/tree-table.js" type="module"></script>
   <script>
     const dateEl = document.getElementById("liveDateTime");
     if (dateEl) {
